@@ -1,0 +1,9 @@
+# git ignore
+
+.idea/
+/tmp/
+/cache/
+/uploads/
+*.DS_Store
+
+system/config/database.php
