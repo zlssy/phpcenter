@@ -30,6 +30,7 @@ class ajax extends AWS_CONTROLLER
 			'check_username',
 			'check_email',
 			'register_process',
+            'login_check_email',
 			'login_process',
 			'register_agreement',
 			'send_valid_mail',
@@ -79,6 +80,11 @@ class ajax extends AWS_CONTROLLER
 
 	public function register_process_action()
 	{
+        if(AWS_APP::config()->get('system')->tcllogin['Open'] == 1)
+        {
+            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('本站目前关闭注册')));
+        }
+
 		if (get_setting('register_type') == 'close')
 		{
 			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('本站目前关闭注册')));
@@ -266,19 +272,94 @@ class ajax extends AWS_CONTROLLER
 		}
 	}
 
+    public function login_check_email_action()
+    {
+        $email = $_POST['email'];
+
+        if (!H::valid_email($email))
+        {
+            H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('请填写正确的邮箱地址')));
+        }
+
+        if(!preg_match("/@(tcl|kuyumall)\.com$/ix", $_POST['email']))
+        {
+            H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('暂只支持 *@tcl.com和 *@kuyumall.com的邮箱')));
+        }
+
+        $user_info = $this->model('account')->get_user_info_by_email($email);
+        if(!$user_info)
+        {
+            AWS_APP::session()->verify_email = $email;
+            H::ajax_json_output(AWS_APP::RSM(null, 0,'您是首次使用CE社区，请您先进行邮箱验证！'));
+        }
+        else
+        {
+            if($user_info['change_pwd_flag'] < 2)
+            {
+                if($_POST['_is_mobile'])
+                {
+                    $find_pwd_url = get_js_url('/m/find_password/3', 1);
+                }
+                else
+                {
+                    $find_pwd_url = get_js_url('/account/find_password/3', 1);
+
+                }
+                AWS_APP::session()->verify_email = $email;
+                H::ajax_json_output(AWS_APP::RSM(null, 1,'您之前是通过TCL统一登录并未初始化CE社区的独立密码，请<a href="'.$find_pwd_url.'">初始化密码</a>！'));
+            }
+            else
+            {
+                H::ajax_json_output(AWS_APP::RSM(null, 2,''));
+            }
+        }
+
+    }
+
 	public function login_process_action()
 	{
-		if (get_setting('ucenter_enabled') == 'Y')
-		{
-			if (!$user_info = $this->model('ucenter')->login($_POST['user_name'], $_POST['password']))
-			{
-				$user_info = $this->model('account')->check_login($_POST['user_name'], $_POST['password']);
-			}
-		}
-		else
-		{
-			$user_info = $this->model('account')->check_login($_POST['user_name'], $_POST['password']);
-		}
+        if (!H::valid_email($_POST['user_name']))
+        {
+            H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('请填写正确的邮箱地址')));
+        }
+
+        if(!preg_match("/@(tcl|kuyumall)\.com$/ix", $_POST['user_name']))
+        {
+            H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('暂只支持 *@tcl.com和 *@kuyumall.com的邮箱')));
+        }
+
+        $is_exsit_user = $this->model('account')->get_user_info_by_email($_POST['user_name']);
+
+        if(!$is_exsit_user)
+        {
+            H::ajax_json_output(AWS_APP::RSM(null, -1,'您是首次使用CE社区，请您先进行邮箱验证！->选择忘记密码进行设置即可'));
+        }
+        else
+        {
+            if($is_exsit_user['change_pwd_flag'] < 2)
+            {
+                if($_POST['_is_mobile'])
+                {
+                    H::ajax_json_output(AWS_APP::RSM(null, -1,'您之前是通过TCL统一登录并未初始化过CE社区的独立密码，请初始化密码！->选择忘记密码进行设置即可'));
+                }
+                else
+                {
+                    H::ajax_json_output(AWS_APP::RSM(null, -1,'您之前是通过TCL统一登录并未初始化过CE社区的独立密码，请<a href="'.get_js_url('/account/find_password/3', 1).'">初始化密码</a>！'));
+                }
+
+            }
+            else if($is_exsit_user['change_pwd_flag'] == 2)
+            {
+                $_post_password = compile_password($_POST['password'], $is_exsit_user['salt_0'], 1);
+
+                $user_info = $this->model('account')->check_login($_POST['user_name'], $_post_password);
+            }
+            else if ($is_exsit_user['change_pwd_flag'] == 3)
+            {
+                $_post_password = $_POST['password'];
+                $user_info = $this->model('account')->check_login($_POST['user_name'], $_post_password, 1);
+            }
+        }
 
 		if (! $user_info)
 		{
@@ -290,6 +371,11 @@ class ajax extends AWS_CONTROLLER
 			{
 				H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('抱歉, 你的账号已经被禁止登录')));
 			}
+
+            if ($user_info['change_pwd_flag'] < 2)
+            {
+                H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('首次使用此登录，请重置密码')));
+            }
 
 			if (get_setting('site_close') == 'Y' AND $user_info['group_id'] != 1)
 			{
@@ -304,13 +390,25 @@ class ajax extends AWS_CONTROLLER
 			{
 				if ($_POST['net_auto_login'])
 				{
-					$expire = 60 * 60 * 24 * 360;
+					$expire = 60 * 60 * 24 * 30;
 				}
+                else
+                {
+                    $expire = null;
+                }
+                $this->model('account')->setcookie_logout();
+                $this->model('account')->setsession_logout();
 
 				$this->model('account')->update_user_last_login($user_info['uid']);
-				$this->model('account')->setcookie_logout();
 
-				$this->model('account')->setcookie_login($user_info['uid'], $_POST['user_name'], $_POST['password'], $user_info['salt'], $expire);
+                if($user_info['change_pwd_flag'] == 2)
+                {
+                    $this->model('account')->setcookie_login($user_info['uid'], $_POST['user_name'], $_post_password, $user_info['salt'], $expire);
+                }
+                else
+                {
+                    $this->model('account')->setcookie_login($user_info['uid'], $_POST['user_name'], $_post_password, $user_info['salt'], $expire,true, 1);
+                }
 
 				if (get_setting('register_valid_type') == 'email' AND !$user_info['valid_email'])
 				{
@@ -322,7 +420,7 @@ class ajax extends AWS_CONTROLLER
 				{
 					$url = get_js_url('/home/first_login-TRUE');
 				}
-				else if ($_POST['return_url'] AND !strstr($_POST['return_url'], '/logout') AND
+				else if ($_POST['return_url'] AND !strstr($_POST['return_url'], '/logout') AND !strstr($_POST['return_url'], '/find_password/modify') AND !strstr($_POST['return_url'], '/find_password_modify') AND
 					($_POST['_is_mobile'] AND strstr($_POST['return_url'], '/m/') OR
 					strstr($_POST['return_url'], '://') AND strstr($_POST['return_url'], base_url())))
 				{
@@ -340,6 +438,11 @@ class ajax extends AWS_CONTROLLER
 					$url = ($url) ? $sync_url . 'url-' . base64_encode($url) : $sync_url;
 				}
 			}
+            if(!$url)
+            {
+                $url = get_js_url('/');
+            }
+            $url = str_ireplace('https://','http://',$url);
 
 			H::ajax_json_output(AWS_APP::RSM(array(
 				'url' => $url
@@ -562,6 +665,7 @@ class ajax extends AWS_CONTROLLER
 
 	public function request_find_password_action()
 	{
+
 		if (!H::valid_email($_POST['email']))
 		{
 			H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('请填写正确的邮箱地址')));
@@ -574,9 +678,29 @@ class ajax extends AWS_CONTROLLER
 
 		if (!$user_info = $this->model('account')->get_user_info_by_email($_POST['email']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('邮箱地址错误或帐号不存在')));
+            if(!preg_match("/@(tcl|kuyumall)\.com$/ix", $_POST['email']))
+            {
+                H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('暂时只支持tcl后kuyumall后缀的邮箱')));
+		    }
+            else
+            {
+                $email = htmlspecialchars($_POST['email']);
+                $user_name = explode('@',$_POST['email']);
+                $user_name = $user_name[0];
+                $change_pwd_flag = 1;
+                $uid = $this->model('account')->user_register($user_name,'123456',$email,$change_pwd_flag);
+                if($uid)
+                {
+                    $user_info['uid'] = $uid;
+                    $user_info['email'] = $email;
+                }
+                else
+                {
+                    H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('邮箱地址不存在，请联系管理员')));
+                }
+            }
 		}
-
+        unset(AWS_APP::session()->verify_email);
 		$this->model('active')->new_find_password($user_info['uid']);
 
 		AWS_APP::session()->find_password = $user_info['email'];
@@ -608,12 +732,12 @@ class ajax extends AWS_CONTROLLER
 		{
 			if ($active_data['active_time'] OR $active_data['active_ip'])
 			{
-				H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('链接已失效，请重新找回密码')));
+				H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('链接已失效，请重新设置密码')));
 			}
 		}
 		else
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('链接已失效，请重新找回密码')));
+			H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('链接已失效，请重新设置密码')));
 		}
 
 		if (!$_POST['password'])
@@ -628,12 +752,13 @@ class ajax extends AWS_CONTROLLER
 
 		if (! $uid = $this->model('active')->active_code_active($_POST['active_code'], 'FIND_PASSWORD'))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('链接已失效，请重新找回密码')));
+			H::ajax_json_output(AWS_APP::RSM(null, -1,  AWS_APP::lang()->_t('链接已失效，请重新设置密码')));
 		}
 
 		$user_info = $this->model('account')->get_user_info_by_uid($uid);
 
-		$this->model('account')->update_user_password_ingore_oldpassword($_POST['password'], $uid, $user_info['salt']);
+
+		$this->model('account')->update_user_password_ingore_oldpassword($_POST['password'], $uid, $user_info['salt'], 3);
 
 		$this->model('active')->set_user_email_valid_by_uid($user_info['uid']);
 
@@ -647,6 +772,7 @@ class ajax extends AWS_CONTROLLER
 		$this->model('account')->setsession_logout();
 
 		unset(AWS_APP::session()->find_password);
+        unset(AWS_APP::session()->find_password_salt_0);
 
 		H::ajax_json_output(AWS_APP::RSM(array(
 			'url' => get_js_url('/account/login/'),
@@ -1102,7 +1228,7 @@ class ajax extends AWS_CONTROLLER
 			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('请输入相同的确认密码')));
 		}
 
-		if (strlen($_POST['password']) < 6 OR strlen($_POST['password']) > 16)
+		if (strlen($_POST['password']) < 6 OR strlen($_POST['password']) > 32)
 		{
 			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('密码长度不符合规则')));
 		}
@@ -1120,7 +1246,7 @@ class ajax extends AWS_CONTROLLER
 			}
 		}
 
-		if ($this->model('account')->update_user_password($_POST['old_password'], $_POST['password'], $this->user_id, $this->user_info['salt']))
+		if ($this->model('account')->update_user_password($_POST['old_password'], $_POST['password'], $this->user_id, $this->user_info['salt'],$this->user_info['salt_0'], $this->user_info['change_pwd_flag']))
 		{
 			H::ajax_json_output(AWS_APP::RSM(null, 1, AWS_APP::lang()->_t('密码修改成功, 请牢记新密码')));
 		}

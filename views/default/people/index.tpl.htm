@@ -42,7 +42,7 @@
                         </div>
                         <div class="mod-body">
                             <div class="meta">
-                                <span><i class="icon icon-prestige"></i> <?php _e('威望'); ?> : <em class="aw-text-color-green"><?php echo $this->user['reputation']; ?></em></span>
+                                <!--<span><i class="icon icon-prestige"></i> <?php _e('威望'); ?> : <em class="aw-text-color-green"><?php echo $this->user['reputation']; ?></em></span>-->
                                 <?php if (get_setting('integral_system_enabled') == 'Y') { ?><span><i class="icon icon-score"></i> <?php _e('积分'); ?> : <em class="aw-text-color-orange"><?php echo $this->user['integral']; ?></em></span><?php } ?>
                                 <span><i class="icon icon-agree"></i> <?php _e('赞同'); ?> : <em class="aw-text-color-orange"><?php echo $this->user['agree_count']; ?></em></span>
                                 <span><i class="icon icon-thank"></i> <?php _e('感谢'); ?> : <em class="aw-text-color-orange"><?php echo $this->user['thanks_count']; ?></em></span>
@@ -72,7 +72,7 @@
                         <div class="mod-footer">
                             <ul class="nav nav-tabs aw-nav-tabs">
                                 <li class="active"><a href="#overview" id="page_overview" data-toggle="tab"><?php _e('概述'); ?></a></li>
-                                <li><a href="#questions" id="page_questions" data-toggle="tab"><?php _e('发问'); ?><span class="badge"><?php echo $this->user['question_count']; ?></span></a></li>
+                                <li><a href="#questions" id="page_questions" data-toggle="tab"><?php _e('发帖'); ?><span class="badge"><?php echo $this->user['question_count']; ?></span></a></li>
                                 <li><a href="#answers" id="page_answers" data-toggle="tab"><?php _e('回复'); ?><span class="badge"><?php echo $this->user['answer_count']; ?></span></a></li>
                                 <li><a href="#articles" id="page_articles" data-toggle="tab"><?php _e('文章'); ?><span class="badge"><?php echo $this->user['article_count']; ?></span></a></li>
                                 <li><a href="#focus" id="page_focus" data-toggle="tab"><?php _e('关注'); ?></a></li>
@@ -81,6 +81,7 @@
                                 <?php if ($this->user_id == $this->user['uid'] AND get_setting('integral_system_enabled') == 'Y') { ?>
                                 <li><a href="#integral" id="page_integral" data-toggle="tab"><?php _e('我的积分'); ?></a></li>
                                 <?php } ?>
+                                <li><a href="q/my/" id="page_integral"><?php _e('我的问卷'); ?></a></li>
                             </ul>
                         </div>
                     </div>
@@ -104,7 +105,7 @@
                                                     </div>
                                                     <div class="mod-body">
                                                         <span class="aw-border-radius-5 count pull-left"><i class="icon icon-agree"></i><?php echo $val['answer_info']['agree_count']; ?></span>
-                                                        <p class="aw-hide-txt"><?php echo cjk_substr($val['answer_info']['answer_content'], 0, 130, 'UTF-8', '...'); ?></p>
+                                                        <p class="aw-hide-txt"><?php echo cjk_substr(strip_tags($val['answer_info']['answer_content']), 0, 130, 'UTF-8', '...'); ?></p>
                                                     </div>
                                                 </div>
                                                 <?php } ?>
@@ -116,10 +117,10 @@
                                 </div>
                                 <!-- end 回复 -->
 
-                                <!-- 发问 -->
+                                <!-- 发帖 -->
                                 <div class="aw-mod">
                                     <div class="mod-head">
-                                        <h3><a class="pull-right aw-more-content" href="javascript:;" onclick="$('#page_questions').click();"><?php _e('更多'); ?> »</a><?php _e('发问'); ?></h3>
+                                        <h3><a class="pull-right aw-more-content" href="javascript:;" onclick="$('#page_questions').click();"><?php _e('更多'); ?> »</a><?php _e('发帖'); ?></h3>
                                     </div>
                                     <div class="mod-body">
                                         <div class="aw-profile-publish-list">
@@ -141,7 +142,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- end 发问 -->
+                                <!-- end 发帖 -->
 
                                 <!-- 最新动态 -->
                                 <div class="aw-mod">
@@ -170,7 +171,7 @@
                             <div class="tab-pane" id="questions">
                                 <div class="aw-mod">
                                     <div class="mod-head">
-                                        <h3><?php _e('发问'); ?></h3>
+                                        <h3><?php _e('发帖'); ?></h3>
                                     </div>
                                     <div class="mod-body">
                                         <div class="aw-profile-publish-list" id="contents_user_actions_questions"></div>
@@ -304,7 +305,7 @@
                                         <dt><span><?php _e('个人成就'); ?>:</span></dt>
                                         <dd>
                                             <p class="meta">
-                                                <span><i class="icon icon-prestige"></i><?php _e('威望'); ?>: <em class="aw-text-color-green"><?php echo $this->user['reputation']; ?></em></span>
+                                                <!--<span><i class="icon icon-prestige"></i><?php _e('威望'); ?>: <em class="aw-text-color-green"><?php echo $this->user['reputation']; ?></em></span>-->
                                                 <?php if (get_setting('integral_system_enabled') == 'Y') { ?>
                                                 <span><i class="icon icon-score"></i><?php _e('积分'); ?>: <em class="aw-text-color-orange"><?php echo $this->user['integral']; ?></em></span>
                                                 <?php } ?>

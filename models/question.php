@@ -89,7 +89,7 @@ class question_class extends AWS_MODEL
 	}
 
 	/**
-	 * 增加问题浏览次数记录
+	 * 增加帖子浏览次数记录
 	 * @param int $question_id
 	 */
 	public function update_views($question_id)
@@ -108,9 +108,9 @@ class question_class extends AWS_MODEL
 
 	/**
 	 *
-	 * 增加问题内容
-	 * @param string $question_content //问题内容
-	 * @param string $question_detail  //问题说明
+	 * 增加帖子内容
+	 * @param string $question_content //帖子内容
+	 * @param string $question_detail  //帖子说明
 	 *
 	 * @return boolean true|false
 	 */
@@ -125,7 +125,7 @@ class question_class extends AWS_MODEL
 
 		$to_save_question = array(
 			'question_content' => htmlspecialchars($question_content),
-			'question_detail' => htmlspecialchars($question_detail),
+			'question_detail' => html_purify($question_detail),
 			'add_time' => $now,
 			'update_time' => $now,
 			'published_uid' => intval($published_uid),
@@ -169,7 +169,8 @@ class question_class extends AWS_MODEL
 
 		if ($verified)
 		{
-			$data['question_detail'] = htmlspecialchars($question_detail);
+			$question_detail = html_purify($question_detail);
+			$data['question_detail'] = $question_detail;
 
 			if ($question_content)
 			{
@@ -463,7 +464,7 @@ class question_class extends AWS_MODEL
 		}
 		else
 		{
-			// 减少问题关注数量
+			// 减少帖子关注数量
 			if ($this->delete_focus_question($question_id, $uid))
 			{
 				$this->update_focus_count($question_id);
@@ -475,7 +476,7 @@ class question_class extends AWS_MODEL
 
 	/**
 	 *
-	 * 取消问题关注
+	 * 取消帖子关注
 	 * @param int $question_id
 	 *
 	 * @return boolean true|false
@@ -514,7 +515,7 @@ class question_class extends AWS_MODEL
 
 	/**
 	 *
-	 * 判断是否已经关注问题
+	 * 判断是否已经关注帖子
 	 * @param int $question_id
 	 * @param int $uid
 	 *
@@ -682,7 +683,7 @@ class question_class extends AWS_MODEL
 
 	/**
 	 *
-	 * 得到用户感兴趣问题列表
+	 * 得到用户感兴趣帖子列表
 	 * @param int $uid
 	 * @return array
 	 */
@@ -701,7 +702,7 @@ class question_class extends AWS_MODEL
 
 	/**
 	 *
-	 * 保存用户不感兴趣问题列表
+	 * 保存用户不感兴趣帖子列表
 	 * @param int $uid
 	 * @param int $question_id
 	 *
@@ -730,7 +731,7 @@ class question_class extends AWS_MODEL
 
 	/**
 	 *
-	 * 删除用户不感兴趣问题列表
+	 * 删除用户不感兴趣帖子列表
 	 * @param int $uid
 	 * @param int $question_id
 	 *
@@ -798,7 +799,7 @@ class question_class extends AWS_MODEL
 	}
 
 	/**
-	 * 接收者回复邀请的问题
+	 * 接收者回复邀请的帖子
 	 * @param unknown_type $question_invite_id
 	 * @param unknown_type $recipients_uid
 	 */
@@ -1004,7 +1005,7 @@ class question_class extends AWS_MODEL
 
 				if ($weixin_user_info['weixin_settings']['NEW_COMMENT'] != 'N')
 				{
-					$this->model('weixin')->send_text_message($weixin_user['openid'], "您的问题 [" . $question_info['question_content'] . "] 收到了新的评论:\n\n" . strip_tags($message), $this->model('openid_weixin_weixin')->redirect_url('/m/question/' . $question_info['question_id']));
+					$this->model('weixin')->send_text_message($weixin_user['openid'], "您的帖子 [" . $question_info['question_content'] . "] 收到了新的评论:\n\n" . strip_tags($message), $this->model('openid_weixin_weixin')->redirect_url('/m/question/' . $question_info['question_id']));
 				}
 			}
 		}
@@ -1030,7 +1031,7 @@ class question_class extends AWS_MODEL
 
 					if ($weixin_user_info['weixin_settings']['AT_ME'] != 'N')
 					{
-						$this->model('weixin')->send_text_message($weixin_user['openid'], "有会员在问题 [" . $question_info['question_content'] . "] 评论中提到了您", $this->model('openid_weixin_weixin')->redirect_url('/m/question/' . $question_info['question_id']));
+						$this->model('weixin')->send_text_message($weixin_user['openid'], "有会员在帖子 [" . $question_info['question_content'] . "] 评论中提到了您", $this->model('openid_weixin_weixin')->redirect_url('/m/question/' . $question_info['question_id']));
 					}
 				}
 			}
@@ -1098,12 +1099,12 @@ class question_class extends AWS_MODEL
 			switch ($log['associate_action'])
 			{
 				case ACTION_LOG::ADD_QUESTION :
-					$title_list = $user_name_string . ' 添加了该问题</p><p>' . $log['associate_content'] . '</p><p>' . $log['associate_attached'] . '';
+					$title_list = $user_name_string . ' 添加了该帖子</p><p>' . $log['associate_content'] . '</p><p>' . $log['associate_attached'] . '';
 					break;
 
-				case ACTION_LOG::MOD_QUESTION_TITLE : //修改问题标题
+				case ACTION_LOG::MOD_QUESTION_TITLE : //修改帖子标题
 
-					$title_list = $user_name_string . ' 修改了问题标题';
+					$title_list = $user_name_string . ' 修改了帖子标题';
 
 					if ($log['addon_data']['modify_reason'])
 					{
@@ -1116,16 +1117,16 @@ class question_class extends AWS_MODEL
 
 					break;
 
-				case ACTION_LOG::MOD_QUESTION_DESCRI : //修改问题
+				case ACTION_LOG::MOD_QUESTION_DESCRI : //修改帖子
 
-					$title_list = $user_name_string . ' 修改了问题内容';
+					$title_list = $user_name_string . ' 修改了帖子内容';
 
 					if ($log['addon_data']['modify_reason'])
 					{
 						$title_list .= '[' . $log['addon_data']['modify_reason'] . ']';
 					}
 
-					$Services_Diff = new Services_Diff($log['associate_attached'], $log['associate_content']);
+					$Services_Diff = new Services_Diff(strip_tags(br2nl($log['associate_attached'])), strip_tags(br2nl($log['associate_content'])));
 
 					$title_list .= '<p>' .$Services_Diff->get_Text_Diff_Renderer_inline() . '</p>';
 
@@ -1134,46 +1135,46 @@ class question_class extends AWS_MODEL
 				case ACTION_LOG::ADD_TOPIC : //添加话题
 
 					$topic_info = $this->model('topic')->get_topic_by_id($log['associate_attached']);
-					$title_list = $user_name_string . ' 给该问题添加了一个话题 <p><a href="topic/' . $topic_info['url_token'] . '">' . $log['associate_content'] . '</a>';
+					$title_list = $user_name_string . ' 给该帖子添加了一个话题 <p><a href="topic/' . $topic_info['url_token'] . '">' . $log['associate_content'] . '</a>';
 
 					break;
 
 				case ACTION_LOG::DELETE_TOPIC : //移除话题
 
 					$topic_info = $this->model('topic')->get_topic_by_id($log['associate_attached']);
-					$title_list = $user_name_string . ' 移除了该问题的一个话题 <p><a href="topic/' . $topic_info['url_token'] . '">' . $log['associate_content'] . '</a>';
+					$title_list = $user_name_string . ' 移除了该帖子的一个话题 <p><a href="topic/' . $topic_info['url_token'] . '">' . $log['associate_content'] . '</a>';
 
 					break;
 
 				case ACTION_LOG::MOD_QUESTION_CATEGORY : //修改分类
 
 
-					$title_list = $user_name_string . ' 修改了该问题的分类 <p><a href="explore/category-' . $log['associate_attached'] . '">' . $log['associate_content'] . '</a>';
+					$title_list = $user_name_string . ' 修改了该帖子的分类 <p><a href="explore/category-' . $log['associate_attached'] . '">' . $log['associate_content'] . '</a>';
 
 					break;
 
 				case ACTION_LOG::MOD_QUESTION_ATTACH : //修改附件
 
 
-					$title_list = $user_name_string . ' 修改了该问题的附件 ';
+					$title_list = $user_name_string . ' 修改了该帖子的附件 ';
 
 					break;
 
-				case ACTION_LOG::REDIRECT_QUESTION : //问题重定向
+				case ACTION_LOG::REDIRECT_QUESTION : //帖子重定向
 
 					$question_info = $this->get_question_info_by_id($log['associate_attached']);
 
 					if ($question_info)
 					{
-						$title_list = $user_name_string . ' 将问题重定向至：<a href="question/' . $log['associate_attached'] . '">' . $question_info['question_content'] . '</a>';
+						$title_list = $user_name_string . ' 将帖子重定向至：<a href="question/' . $log['associate_attached'] . '">' . $question_info['question_content'] . '</a>';
 					}
 
 					break;
 
-				case ACTION_LOG::DEL_REDIRECT_QUESTION : //取消问题重定向
+				case ACTION_LOG::DEL_REDIRECT_QUESTION : //取消帖子重定向
 
 
-					$title_list = $user_name_string . ' 取消了问题重定向 ';
+					$title_list = $user_name_string . ' 取消了帖子重定向 ';
 
 					break;
 			}
@@ -1313,7 +1314,7 @@ class question_class extends AWS_MODEL
 
 	/**
 	 *
-	 * 根据问题ID,得到相关联的话题标题信息
+	 * 根据帖子ID,得到相关联的话题标题信息
 	 * @param int $question_id
 	 * @param string $limit
 	 *
@@ -1438,9 +1439,9 @@ class question_class extends AWS_MODEL
 				'thanks_count' => $this->count('question_thanks', 'question_id = ' . intval($question_id)),
 			), 'question_id = ' . intval($question_id));
 
-			$this->model('integral')->process($uid, 'QUESTION_THANKS', get_setting('integral_system_config_thanks'), '感谢问题 #' . $question_id, $question_id);
+			$this->model('integral')->process($uid, 'QUESTION_THANKS', get_setting('integral_system_config_thanks'), '感谢帖子 #' . $question_id, $question_id);
 
-			$this->model('integral')->process($question_info['published_uid'], 'THANKS_QUESTION', -get_setting('integral_system_config_thanks'), '问题被感谢 #' . $question_id, $question_id);
+			$this->model('integral')->process($question_info['published_uid'], 'THANKS_QUESTION', -get_setting('integral_system_config_thanks'), '帖子被感谢 #' . $question_id, $question_id);
 
 			$this->model('account')->update_thanks_count($question_info['published_uid']);
 

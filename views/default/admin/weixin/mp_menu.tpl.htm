@@ -79,7 +79,7 @@
                     <div class="mod-head clearfix">
                         <?php if ($this->category_data) { ?>
                         <div class="mod">
-                            <div class="mod-head"><?php _e('分类最新问题'); ?></div>
+                            <div class="mod-head"><?php _e('分类最新帖子'); ?></div>
                             <div class="divider"></div>
                             <div class="mod-footer">
                                 <ul class="control-height">
@@ -92,7 +92,7 @@
                         <?php } ?>
 
                         <div class="mod">
-                            <div class="mod-head"><?php _e('专题最新问题'); ?></div>
+                            <div class="mod-head"><?php _e('专题最新帖子'); ?></div>
                             <div class="divider"></div>
                             <div class="mod-footer">
                                 <ul class="control-height">
@@ -107,7 +107,7 @@
                     </div>
                     <div class="mod-footer clearfix">
                         <ul>
-                            <li data-value="COMMAND_NEW_QUESTION"><a><?php _e('全部最新问题'); ?></a></li>
+                            <li data-value="COMMAND_NEW_QUESTION"><a><?php _e('全部最新帖子'); ?></a></li>
                         </ul>
                     </div>
                 </div>
@@ -143,7 +143,7 @@
                     <div class="mod-head clearfix">
                         <?php if ($this->category_data) { ?>
                         <div class="mod">
-                            <div class="mod-head"><?php _e('分类热门问题'); ?></div>
+                            <div class="mod-head"><?php _e('分类热门帖子'); ?></div>
                             <div class="divider"></div>
                             <div class="mod-footer">
                                 <ul class="control-height">
@@ -157,7 +157,7 @@
 
 
                         <div class="mod">
-                            <div class="mod-head"><?php _e('专题热门问题'); ?></div>
+                            <div class="mod-head"><?php _e('专题热门帖子'); ?></div>
                             <div class="divider"></div>
                             <div class="mod-footer">
                                 <ul class="control-height">
@@ -172,7 +172,7 @@
                     </div>
                     <div class="mod-footer clearfix">
                         <ul>
-                            <li data-value="COMMAND_HOT_QUESTION"><a><?php _e('全部热门问题'); ?></a></li>
+                            <li data-value="COMMAND_HOT_QUESTION"><a><?php _e('全部热门帖子'); ?></a></li>
                         </ul>
                     </div>
                 </div>
@@ -185,7 +185,7 @@
                     <div class="mod-head clearfix">
                         <?php if ($this->category_data) { ?>
                         <div class="mod">
-                            <div class="mod-head"><?php _e('分类推荐问题'); ?></div>
+                            <div class="mod-head"><?php _e('分类推荐帖子'); ?></div>
                             <div class="divider"></div>
                             <div class="mod-footer">
                                 <ul class="control-height">
@@ -198,7 +198,7 @@
                         <?php } ?>
 
                         <div class="mod">
-                            <div class="mod-head"><?php _e('专题推荐问题'); ?></div>
+                            <div class="mod-head"><?php _e('专题推荐帖子'); ?></div>
                             <div class="divider"></div>
                             <div class="mod-footer">
                                 <ul class="control-height">
@@ -213,7 +213,7 @@
                     </div>
                     <div class="mod-footer">
                         <ul class="control-height">
-                            <li data-value="COMMAND_RECOMMEND_QUESTION"><a><?php _e('全部推荐问题'); ?></a></li>
+                            <li data-value="COMMAND_RECOMMEND_QUESTION"><a><?php _e('全部推荐帖子'); ?></a></li>
                         </ul>
                     </div>
                 </div>
@@ -226,7 +226,7 @@
                     <div class="mod-head clearfix">
                         <?php if ($this->category_data) { ?>
                         <div class="mod">
-                            <div class="mod-head"><?php _e('分类待回复问题'); ?></div>
+                            <div class="mod-head"><?php _e('分类待回复帖子'); ?></div>
                             <div class="divider"></div>
                             <div class="mod-footer">
                                 <ul class="control-height">
@@ -239,7 +239,7 @@
                         <?php } ?>
 
                         <div class="mod">
-                            <div class="mod-head"><?php _e('专题待回复问题'); ?></div>
+                            <div class="mod-head"><?php _e('专题待回复帖子'); ?></div>
                             <div class="divider"></div>
                             <div class="mod-footer">
                                 <ul class="control-height">
@@ -254,7 +254,7 @@
                     </div>
                     <div class="mod-footer clearfix">
                         <ul>
-                            <li data-value="COMMAND_NO_ANSWER_QUESTION"><a><?php _e('全部待回复问题'); ?></a></li>
+                            <li data-value="COMMAND_NO_ANSWER_QUESTION"><a><?php _e('全部待回复帖子'); ?></a></li>
                         </ul>
                     </div>
                 </div>
@@ -320,7 +320,7 @@
                                 <ul class="control-height">
                                     <?php if (get_setting('weixin_account_role') == 'service') { ?>
                                     <li data-value="<?php echo get_js_url('/m/nearby_people/'); ?>" data-upload="false"><a><?php _e('附近的人'); ?></a></li>
-                                    <li data-value="<?php echo get_js_url('/m/nearby_question/'); ?>" data-upload="false"><a><?php _e('附近的问题'); ?></a></li>
+                                    <li data-value="<?php echo get_js_url('/m/nearby_question/'); ?>" data-upload="false"><a><?php _e('附近的帖子'); ?></a></li>
                                     <?php } ?>
                                     <li data-value="<?php echo get_js_url('/m/register/'); ?>" data-upload="false"><a><?php _e('注册用户'); ?></a></li>
                                     <li data-value="<?php echo get_js_url('/m/explore/'); ?>" data-upload="false"><a><?php _e('发现'); ?></a></li>
@@ -336,11 +336,11 @@
             <script type="text/x-template" id="select_option">
                 <option></option>
                 <option data-name="全局命令"><?php _e('全局命令'); ?></option>
-                <option data-value="COMMAND_NEW_POSTS" data-name="最新问题"><?php _e('最新内容'); ?></option>
-                <option data-value="COMMAND_NEW_QUESTION" data-name="最新问题"><?php _e('最新问题'); ?></option>
+                <option data-value="COMMAND_NEW_POSTS" data-name="最新帖子"><?php _e('最新内容'); ?></option>
+                <option data-value="COMMAND_NEW_QUESTION" data-name="最新帖子"><?php _e('最新帖子'); ?></option>
                 <option data-value="COMMAND_NEW_ARTICLE" data-name="文章专题"><?php _e('文章专题'); ?></option>
-                <option data-value="COMMAND_HOT_QUESTION" data-name="热门问题"><?php _e('热门问题'); ?></option>
-                <option data-value="COMMAND_RECOMMEND_QUESTION" data-name="推荐问题"><?php _e('推荐问题'); ?></option>
+                <option data-value="COMMAND_HOT_QUESTION" data-name="热门帖子"><?php _e('热门帖子'); ?></option>
+                <option data-value="COMMAND_RECOMMEND_QUESTION" data-name="推荐帖子"><?php _e('推荐帖子'); ?></option>
                 <option data-value="COMMAND_HOME_ACTIONS" data-name="等待回复"><?php _e('等待回复'); ?></option>
                 <option data-name="自定义回复"><?php _e('自定义回复'); ?></option>
                 <option data-name="自定义 URL"><?php _e('自定义 URL'); ?></option>
@@ -715,7 +715,7 @@
     {
         switch (type)
         {
-            case '最新问题' :
+            case '最新帖子' :
                 var template = $('#drop_menu_template_new_question').html();
             break;
             case '最新内容' :
@@ -724,10 +724,10 @@
             case '文章专题' :
                 var template = $('#drop_menu_template_new_article').html();
             break;
-            case '热门问题' :
+            case '热门帖子' :
                 var template = $('#drop_menu_template_hot_question').html();
             break;
-            case '推荐问题' :
+            case '推荐帖子' :
                 var template = $('#drop_menu_template_suggest_question').html();
             break;
             case '等待回复' :

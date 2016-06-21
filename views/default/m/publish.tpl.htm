@@ -1,13 +1,16 @@
 <?php TPL::output('m/header.tpl.htm'); ?>
 
+<style>
+	.edui-container .edui-toolbar {border-bottom:none;}
+</style>
 <!-- 标题 -->
 <div class="aw-title">
-	<?php _e('发起问题'); ?>
+	<?php _e('发起帖子'); ?>
 </div>
 <!-- end 标题 -->
 
 <!-- 内容 -->
-<div class="container active">
+<div class="container active top_smile_box">
 	<form action="publish/ajax/<?php if ($this->question_info['question_id']) { ?>modify<?php } else { ?>publish<?php } ?>_question/" method="post" id="question_form" onsubmit="return false;">
 		<input type="hidden" name="post_hash" value="<?php echo new_post_hash(); ?>" />
 		<input type="hidden" name="question_id" id="question_id" value="<?php echo $this->question_info['question_id']; ?>" />
@@ -21,25 +24,28 @@
 		<div class="aw-publish-box">
 			<!-- 问题标题 -->
 			<div class="title">
-				<input type="text" class="form-control" placeholder="<?php _e('输入问题'); ?>" name="question_content" value="<?php echo $this->question_info['question_content']; ?>" />
+				<input type="text" class="form-control" placeholder="<?php _e('输入帖子'); ?>" name="question_content" value="<?php echo $this->question_info['question_content']; ?>" />
 			</div>
 			<!-- end 问题标题 -->
 
 			<!-- 问题补充 -->
 			<div class="content">
-				<textarea name="question_detail" class="form-control autosize" placeholder="<?php _e('问题详细补充（选填）'); ?>" id="publish_detail" cols="30" rows="4"><?php echo $this->question_info['question_detail']; ?></textarea>
+				<textarea name="question_detail" placeholder="<?php _e('帖子详细补充（选填）'); ?>" id="publish_detail" style="width:100%;height:214px;"><?php echo $this->question_info['question_detail']; ?></textarea>
 			</div>
 			<!-- end 问题补充 -->
 
 			<!-- 上传控件 -->
+			<div class="aw-upload-box clearfix">
+				<div class="extra_btn_wrap">
+					<a class="smile_wrap smile_control" href="javascript:;">表情</a>
+					<a class="upload_img_wrap img_control" href="javascript:;">上传图片</a>
+				</div>
+
+			</div>
+			<!-- end 上传控件 -->
 			<div class="aw-upload-box">
-				<a class="icon icon-pic">
-					<span class="tips">上传图片</span>
-				</a>
 				<div class="upload-container"></div>
 			</div>
-
-			<!-- end 上传控件 -->
 
 			<!-- 分类 -->
 			<?php if ($this->question_category_list) { ?>
@@ -53,7 +59,7 @@
 			<?php } ?>
 			<!-- end 分类 -->
 
-			<!-- 话题bar -->
+			<!-- 标签bar -->
 			<?php if ($this->user_id AND !$this->question_info['question_id']) { ?>
 			<div class="aw-topic-bar clearfix" data-type="publish">
 				<div class="tag-bar">
@@ -61,7 +67,7 @@
 				</div>
 			</div>
 			<?php } ?>
-			<!-- end 话题bar -->
+			<!-- end 标签bar -->
 
 			<?php if ($this->human_valid) { ?>
 			<div class="aw-auth-img clearfix">
@@ -78,7 +84,7 @@
 				<!-- <label class="pull-left"><input type="checkbox"  value="1" name="do_delete" /> <?php _e('删除问题'); ?></label> -->
 				<?php } ?>
 
-				<a class="btn btn-success btn-slarge" onclick="AWS.ajax_post($('#question_form')); return false;"><?php _e('发起问题'); ?></a>
+				<a class="btn btn-success btn-slarge" onclick="AWS.ajax_post($('#question_form')); return false;"><?php _e('发起帖子'); ?></a>
 			</div>
 
 		</div>
@@ -102,11 +108,6 @@
 			$('header, nav, footer').hide();
 		}
 
-		if (ATTACH_ACCESS_KEY != '')
-		{
-			var fileupload = new FileUpload('file' ,'.aw-upload-box .icon-pic', '.aw-upload-box .upload-container', G_BASE_URL + '/publish/ajax/attach_upload/id-question__attach_access_key' + '-' + ATTACH_ACCESS_KEY, {'insertTextarea' : '#publish_detail', 'deleteBtnTemplate' : '<a class="delete-file"><i class="icon icon-delete"></i></a>', 'insertBtnTemplate' : '<a class="insert-file"><i class="icon icon-insert"></i></a>', 'editor': $('#publish_detail')});
-		}
-
 		if ($('#category_id').length)
 		{
 			var category_data = '';
@@ -122,8 +123,6 @@
 					category_data += "{'title':'" + $(field).text() + "', 'id':'" + $(field).val() + "'}";
 				}
 			});
-
-			//AWS.Dropdown.add_dropdown_list('.aw-publish-dropdown', eval('[' + category_data + ']'), CATEGORY_ID);
 
 			$('.aw-publish-dropdown .dropdown-menu li a').click(function() {
 				$('#category_id').val($(this).attr('data-value'));
@@ -172,6 +171,20 @@
 				'</li>');
 		}
 
+		var editor = UM.getEditor('publish_detail', {toolbar:[], autoHeightEnabled : false});
+		if(typeof UM.instances === 'undefined')
+		{
+			UM.instances = [];
+		}
+		UM.instances.push(editor);
+
+		AWS.emotion.inject({editor:editor, is_parse : true});
+
+		if (ATTACH_ACCESS_KEY != '')
+		{
+			var fileupload = new FileUpload('file' ,'.aw-upload-box .img_control', '.aw-upload-box .upload-container', G_BASE_URL + '/publish/ajax/attach_upload/id-question__attach_access_key' + '-' + ATTACH_ACCESS_KEY, {'insertTextarea' : '#publish_detail', 'deleteBtnTemplate' : '<a class="delete-file"><i class="icon icon-delete"></i></a>', 'insertBtnTemplate' : '', 'editor': editor});
+		}
+
 		if (ITEM_ID && G_UPLOAD_ENABLE == 'Y' && ATTACH_ACCESS_KEY != '')
 		{
 			if ($(".aw-upload-box .upload-list").length) {
@@ -180,13 +193,30 @@
 						return false;
 					} else {
 						$.each(data['rsm']['attachs'], function (i, v) {
-						   fileupload.setFileList(v);
+							fileupload.setFileList(v);
 						});
 					}
 				}, 'json');
 			}
 		}
 
+		//保存草稿
+		var editor_loading = false;	//加一个保存草稿锁
+		var EDITOR_CALLBACK = function(){
+			var cv = editor.getContent();
+			if(cv.length) {
+				editor_loading = true;
+				$.post(G_BASE_URL + '/account/ajax/save_draft/item_id-1__type-question', 'message=' + cv, function (result) {
+					editor_loading = false;
+				}, 'json');
+			}
+		};
+		var question_id = parseInt($('#question_id').val());
+
+		question_id = isNaN(question_id) && 0;
+		if(question_id === 0) {
+			editor.addListener('blur', EDITOR_CALLBACK);
+		}
 	});
 </script>
 

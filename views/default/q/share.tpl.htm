@@ -1,0 +1,59 @@
+<?php TPL::output('global/header.tpl.htm'); ?>
+<div class="aw-container-wrap">
+    <div class="container clearfix">
+        <div class="row">
+            <div class="aw-content-wrap clearfix">
+                <div class="aw-topic-bar clearfix">
+                    <a href="q/my/" class="btn btn-normal btn-default">我的问卷</a>
+                    <a href="q/add/" class="btn btn-normal btn-success pull-right">创建新问卷</a>
+                </div>
+                <div class="share-container" style="margin-bottom: 48px;">
+                    <h1 class="h3 text-center">&nbsp;</h1>
+                    <div class="row">
+                        <div id="link" class="col-xs-8 col-xs-offset-2 aw-mt-12">
+                            <label class="aw-bold">问卷链接</label>
+                            <div class="input-group">
+                                <input class="form-control" type="text" id="url" value="<?php echo $this->base_url ?>/q/show/<?php echo $this->qid ?>">
+                                <span class="input-group-btn">
+                                    <button id="btn_copy" class="btn btn-default" type="button">
+                                        复制
+                                    </button><button id="btn_open" class="btn btn-default" type="button">
+                                        打开
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <div id="sns" class="col-xs-8 col-xs-offset-2 aw-mt-12">
+                            <label class="aw-bold">社交分享</label>
+                            <div class="row">
+                                <div id="share_list" class="col-xs-10 col-xs-offset-2">
+                                    <a href="javascript:;" class="share-icon-wrap"><i class="share-icon wechat"></i></a>
+                                    <a href="javascript:;" class="share-icon-wrap weibo"><i class="share-icon weibo"></i></a>
+                                    <a href="javascript:;" class="share-icon-wrap qq"><i class="share-icon qq"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="code" class="col-xs-8 col-xs-offset-2 aw-mt-12">
+                            <label class="aw-bold">二维码下载</label>
+                            <div class="row">
+                                <div class="col-xs-5 text-right">
+                                    <div id="qrcode"></div>
+                                </div>
+                                <div class="col-xs-7">
+                                    <ul id="size_list">
+                                        <li><a href="javascript:void 0;">256*256</a><small>适合插入文档</small></li>
+                                        <li><a href="javascript:void 0;">512*512</a><small>适合插入PPT</small></li>
+                                        <li><a href="javascript:void 0;">1024*1024</a><small>适合印刷出版物</small></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>var qid = '<?php echo $this->qid ?>';</script>
+<script src="<?php echo G_STATIC_URL; ?>/js/questionnaire/share.js"></script>
+<?php TPL::output('global/footer.tpl.htm'); ?>

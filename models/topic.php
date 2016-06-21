@@ -133,7 +133,6 @@ class topic_class extends AWS_MODEL
 		if (! $topics[$topic_id])
 		{
 			$topics[$topic_id] = $this->fetch_row('topic', 'topic_id = ' . intval($topic_id));
-
 			if ($topics[$topic_id] AND !$topics[$topic_id]['url_token'])
 			{
 				$topics[$topic_id]['url_token'] = urlencode($topics[$topic_id]['topic_title']);
@@ -280,7 +279,7 @@ class topic_class extends AWS_MODEL
 
 		if ($topic_description)
 		{
-			$data['topic_description'] = htmlspecialchars($topic_description);
+			$data['topic_description'] = html_purify($topic_description);
 		}
 
 		if ($topic_pic)

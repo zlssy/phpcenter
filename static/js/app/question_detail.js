@@ -22,40 +22,27 @@ $(function()
 		{
 			if (G_ADVANCED_EDITOR_ENABLE == 'Y')
 			{
-				EDITOR = CKEDITOR.replace( 'wmd-input');
-
-				EDITOR_CALLBACK = function (evt)
+				if(typeof UM.instances === 'undefined')
 				{
-					if (evt.editor.getData().length)
+					UM.instances = [];
+				}
+				EDITOR = UM.getEditor('wmd-input', {toolbar:UMEDITOR_TOOLBAR_OPTIONS['mini']});
+
+				EDITOR_CALLBACK = function ()
+				{
+					if (EDITOR.getContent().length)
 					{
-						$.post(G_BASE_URL + '/account/ajax/save_draft/item_id-' + QUESTION_ID + '__type-' + ANSWER_TYPE, 'message=' + evt.editor.getData(), function (result) {
+						$.post(G_BASE_URL + '/account/ajax/save_draft/item_id-' + QUESTION_ID + '__type-' + ANSWER_TYPE, 'message=' + EDITOR.getContent(), function (result) {
 							$('#answer_content_message').html(result.err + ' <a href="#" onclick="$(\'textarea#advanced_editor\').attr(\'value\', \'\'); AWS.User.delete_draft(QUESTION_ID, ANSWER_TYPE); $(this).parent().html(\' \'); return false;">' + _t('删除草稿') + '</a>');
 						}, 'json');
 					}
 				}
+				UM.instances.push(EDITOR);
 
 				// 自动保存草稿
-				EDITOR.on( 'blur', EDITOR_CALLBACK);
-			}
-
-		}
-
-		if ($('.aw-upload-box').length)
-		{
-			if (G_ADVANCED_EDITOR_ENABLE == 'Y')
-			{
-				var fileupload = new FileUpload('file', '.aw-upload-box .btn', '.aw-upload-box .upload-container', G_BASE_URL + '/publish/ajax/attach_upload/id-' + ANSWER_TYPE + '__attach_access_key-' + ATTACH_ACCESS_KEY, {
-					'editor' : EDITOR
-				});
-			}
-			else
-			{
-				var fileupload = new FileUpload('file', '.aw-upload-box .btn', '.aw-upload-box .upload-container', G_BASE_URL + '/publish/ajax/attach_upload/id-' + ANSWER_TYPE + '__attach_access_key-' + ATTACH_ACCESS_KEY, {
-					'editor' : $('.wmd-input')
-				});
+				EDITOR.addListener( 'blur', EDITOR_CALLBACK);
 			}
 		}
-
 
 		//折叠回复
 		$.each($('.aw-question-comment .aw-item'), function (i, e)

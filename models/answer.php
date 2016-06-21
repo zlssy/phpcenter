@@ -263,7 +263,7 @@ class answer_class extends AWS_MODEL
 
 		if (!$answer_id = $this->insert('answer', array(
 			'question_id' => $question_info['question_id'],
-			'answer_content' => htmlspecialchars($answer_content),
+			'answer_content' => html_purify($answer_content),
 			'add_time' => time(),
 			'uid' => intval($uid),
 			'category_id' => $question_info['category_id'],
@@ -303,7 +303,7 @@ class answer_class extends AWS_MODEL
 		}
 
 		$data = array(
-			'answer_content' => htmlspecialchars($answer_content)
+			'answer_content' => html_purify($answer_content)
 		);
 
 		// 更新问题最后时间
@@ -712,7 +712,7 @@ class answer_class extends AWS_MODEL
 					{
 						$answer_user = $this->model('account')->get_user_info_by_uid($uid);
 
-						$this->model('weixin')->send_text_message($weixin_user['openid'], $answer_user['user_name'] . " 在问题 [" . $question_info['question_content'] . "] 的答案评论中提到了您", $this->model('openid_weixin_weixin')->redirect_url('/m/question/' . $question_info['question_id'] . '?answer_id=' . $answer_info['answer_id'] . '&single=TRUE'));
+						$this->model('weixin')->send_text_message($weixin_user['openid'], $answer_user['user_name'] . " 在帖子 [" . $question_info['question_content'] . "] 的答案评论中提到了您", $this->model('openid_weixin_weixin')->redirect_url('/m/question/' . $question_info['question_id'] . '?answer_id=' . $answer_info['answer_id'] . '&single=TRUE'));
 					}
 				}
 			}
@@ -887,7 +887,7 @@ class answer_class extends AWS_MODEL
 			return false;
 		}
 
-		$this->model('integral')->process($answer_info['uid'], 'BEST_ANSWER', get_setting('integral_system_config_best_answer'), '问题 #' . $answer_info['question_id'] . ' 最佳回复');
+		$this->model('integral')->process($answer_info['uid'], 'BEST_ANSWER', get_setting('integral_system_config_best_answer'), '帖子 #' . $answer_info['question_id'] . ' 最佳回复');
 
 		$this->shutdown_update('question', array(
 			'best_answer' => $answer_info['answer_id']

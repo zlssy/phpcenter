@@ -60,19 +60,20 @@ class main extends AWS_ADMIN_CONTROLLER
     {
         if (!$this->user_info['permission']['is_administortar'] AND !$this->user_info['permission']['is_moderator'])
         {
-            H::redirect_msg(AWS_APP::lang()->_t('你没有访问权限, 请重新登录'), '/');
+            H::redirect_msg(AWS_APP::lang()->_t('你没有访问权限, 请重新登录'), '/admin/login/');
         }
         else if (AWS_APP::session()->admin_login)
         {
             HTTP::redirect('/admin/');
         }
+        TPL::import_js('js/md5.js');
 
         TPL::import_css('admin/css/login.css');
 
         TPL::output('admin/login');
     }
 
-    public function logout_action($return_url = '/')
+    public function logout_action($return_url = '/admin/login/')
     {
         $this->model('admin')->admin_logout();
 

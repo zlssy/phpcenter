@@ -42,9 +42,6 @@ class H
 	public static function ajax_json_output($array)
 	{
 		//HTTP::no_cache_header('text/javascript');
-
-		//$array = H::sensitive_words($array);
-
 		echo str_replace(array("\r", "\n", "\t"), '', json_encode($array));
 		exit;
 	}

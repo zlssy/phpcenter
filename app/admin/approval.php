@@ -47,7 +47,7 @@ class approval extends AWS_ADMIN_CONTROLLER
 		}
 		else if ($_GET['type'] == 'weibo_msg')
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入微博消息至问题未启用')));
+			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入微博消息至帖子未启用')));
 		}
 
 		$receiving_email_global_config = get_setting('receiving_email_global_config');
@@ -58,7 +58,7 @@ class approval extends AWS_ADMIN_CONTROLLER
 		}
 		else if ($_GET['type'] == 'received_email')
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入邮件至问题未启用')));
+			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入邮件至帖子未启用')));
 		}
 
 		switch ($_GET['type'])
@@ -147,7 +147,7 @@ class approval extends AWS_ADMIN_CONTROLLER
 			case 'weibo_msg':
 				if (get_setting('weibo_msg_enabled') != 'question')
 				{
-					H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入微博消息至问题未启用')));
+					H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入微博消息至帖子未启用')));
 				}
 
 				$approval_item = $this->model('openid_weibo_weibo')->get_msg_info_by_id($_GET['id']);
@@ -166,7 +166,7 @@ class approval extends AWS_ADMIN_CONTROLLER
 
 				if ($receiving_email_global_config['enabled'] != 'question')
 				{
-					H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入邮件至问题未启用')));
+					H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入邮件至帖子未启用')));
 				}
 
 				$approval_item = $this->model('edm')->get_received_email_by_id($_GET['id']);

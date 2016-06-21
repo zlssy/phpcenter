@@ -2,12 +2,12 @@
 	<div class="aw-footer">
 		Copyright © <?php echo date('Y'); ?><?php if(get_setting('icp_beian')){ ?><span class="hidden-xs"> - <?php echo get_setting('icp_beian'); ?><?php } ?>, All Rights Reserved</span>
 
-		<span class="hidden-xs">Powered By <a href="http://www.wecenter.com/?copyright" target="blank">WeCenter <?php echo G_VERSION; ?></a></span>
+		<span class="hidden-xs">Powered By <a href="#" target="blank">TCL </a></span>
 
 		<?php if (is_mobile(true)) { ?>
 			<div class="container">
 				<div class="row">
-					<p align="center"><?php _e('版本切换'); ?>: <b><?php _e('PC 版'); ?></b> | <a href="m/ignore_ua_check-FALSE"><?php _e('手机版'); ?></a></p>
+					<?php if(0){ ?><p align="center"><?php _e('版本切换'); ?>: <b><?php _e('PC 版'); ?></b> | <a href="<?php echo get_js_url('/m/ignore_ua_check-FALSE', 1); ?>"><?php _e('手机版'); ?></a></p><?php } ?>
 				</div>
 			</div>
 		<?php } ?>

@@ -53,29 +53,33 @@ var AWS =
 		}
 		if (template)
 		{
-			$('#aw-ajax-box').empty().append(template);
-			
+			var ajax_box = $('#aw-ajax-box');
+
+			ajax_box.empty().append(template);
+			var dialog_width = ajax_box.find('.modal-dialog').width();
+			var mwidth = dialog_width > 0 ? dialog_width - 30 : $(window).width() - 50;
 			switch (type)
 			{
 				case 'commentEdit':
 		            $.get(G_BASE_URL + '/question/ajax/fetch_answer_data/' + data.answer_id, function (result)
 		            {
-		                $('#editor_reply').html(result.answer_content.replace('&amp;', '&'));
+						if(typeof UM.instances == 'undefined') {
+							UM.instances = [];
+						}
+						if(typeof AWS.commentEditEditor !== 'undefined') {
+							for(var i in UM.instances) {
+								if(UM.instances[i] == AWS.commentEditEditor) {
+									UM.instances.splice(i, 1);
+								}
+							}
+							AWS.commentEditEditor.destroy();	//如果UMEditor实例已经存在,则需要注销该编辑器
+						}
+						ajax_box.find('#editor_reply').css('width', mwidth);
+						AWS.commentEditEditor = UM.getEditor('editor_reply', {toolbar:[]});
+						UM.instances.push(AWS.commentEditEditor);
+						AWS.commentEditEditor.setContent(result.answer_content.replace('&amp;', '&'));
 		            }, 'json');
-					
-		            var fileupload = new FileUpload('file', '.alert-commentEdit .aw-upload-box .btn', '.alert-commentEdit .aw-upload-box .upload-container', G_BASE_URL + '/publish/ajax/attach_upload/id-answer__attach_access_key-' + ATTACH_ACCESS_KEY, {'insertTextarea': '.alert-commentEdit #editor_reply', 'deleteBtnTemplate' : '<a class="delete-file"><i class="icon icon-delete"></i></a>', 'insertBtnTemplate' : '<a class="insert-file"><i class="icon icon-insert"></i></a>', 'editor' : ''});
 
-		            if ($(".alert-commentEdit .upload-list").length) {
-			            $.post(G_BASE_URL + '/publish/ajax/answer_attach_edit_list/', 'answer_id=' + data.answer_id, function (data) {
-			                if (data['err']) {
-			                    return false;
-			                } else {
-			                    $.each(data['rsm']['attachs'], function (i, v) {
-			                        fileupload.setFileList(v);
-			                    });
-			                }
-			            }, 'json');
-			        }
 		            break;
 			}
 		}
@@ -160,7 +164,15 @@ var AWS =
 	},
 
 	ajax_post: function (formEl, processer, type)	// 表单对象，用 jQuery 获取，回调函数名
-	{	
+	{
+		// 若有编辑器的话就更新编辑器内容再提交
+		if (typeof UM != 'undefined')
+		{
+			for ( instance in UM.instances ) {
+				UM.instances[instance].sync();
+			}
+		}
+
 		if (typeof(processer) != 'function')
 		{
 			processer = AWS.ajax_processer;
@@ -172,7 +184,58 @@ var AWS =
 	    {
 	    	var type = 'default';
 	    }
-		
+
+
+        if(formEl.attr('id') == 'fpw_form' || formEl.attr('id') == 'login_form')
+        {
+            if(formEl.find("input[name=password]").attr('type') == 'password')
+            {
+                var password = hex_md5(formEl.find("input[name=password]").val());
+            }
+            if(formEl.find("input[name=re_password]").attr('type') == 'password')
+            {
+                var re_password = hex_md5(formEl.find("input[name=re_password]").val());
+            }
+        }
+
+        if(password || re_password)
+        {
+            var custom_data;
+
+            if(formEl.attr('id') == 'login_form')
+            {
+                var return_url = formEl.find("input[name=return_url]").val();
+                var user_name = formEl.find("input[name=user_name]").val();
+                var net_auto_login = formEl.find("input[name=net_auto_login]").prop("checked") ? 1 : 0;
+                custom_data = {
+                    _is_mobile:'true',
+                    return_url: return_url,
+                    user_name: user_name,
+                    password: password,
+                    net_auto_login: net_auto_login
+                }
+            }
+            else if(formEl.attr('id') == 'fpw_form')
+            {
+                var active_code = formEl.find("input[name=active_code]").val();
+                var seccode_verify = formEl.find("input[name=seccode_verify]").val();
+                custom_data = {
+                    _is_mobile:'true',
+                    active_code:active_code,
+                    password: password,
+                    re_password: re_password,
+                    seccode_verify: seccode_verify
+                }
+            }
+
+            $.post(formEl.attr("action"),custom_data , function (result)
+            {
+                processer(type, result);
+            }, 'json');
+
+            return false;
+        }
+
 		var custom_data = {
 			_post_type:'ajax',
 			_is_mobile:'true'
@@ -248,7 +311,7 @@ var AWS =
 
 							if (USER_ANSWERED)
 							{
-								$('.aw-replay-box.question').append('<p align="center">一个问题只能回复一次, 你可以在发言后 ' + ANSWER_EDIT_TIME + ' 分钟内编辑回复过的内容</p>');
+								$('.aw-replay-box.question').append('<p align="center">一个帖子只能回复一次, 你可以在发言后 ' + ANSWER_EDIT_TIME + ' 分钟内编辑回复过的内容</p>');
 							}
 							
 						}
@@ -1138,7 +1201,7 @@ AWS.Init =
 
 			AWS.Dropdown.bind_dropdown_list('.aw-topic-bar input','topic');
 
-			/* 话题编辑添加按钮 */
+			/* 标签编辑添加按钮 */
 			$('.aw-topic-bar .add').click(function()
 			{
 				switch (data_type)
@@ -1182,7 +1245,7 @@ AWS.Init =
 				$(this).parents('.aw-topic-bar').find('.aw-dropdown-list').hide();
 			});
 
-			/* 话题编辑取消按钮 */
+			/* 标签编辑取消按钮 */
 			$('.aw-topic-bar .cancel').click(function()
 			{
 				$(this).parents('.aw-topic-bar').find('.aw-add-topic-box').show();
@@ -1197,7 +1260,7 @@ AWS.Init =
 				$(this).parents('.editor').detach();
 			});
 
-			// 是否允许创建新话题
+			// 是否允许创建新标签
 	        if (!G_CAN_CREATE_TOPIC)
 	        {
 	            $(this).parents('.aw-topic-bar').find('.add').hide();
@@ -1214,7 +1277,7 @@ AWS.Init =
 	            return true;
 	        }
 
-	        var comment_box_id = '#aw-comment-box-' + $(this).attr('data-type') + '-' + 　$(this).attr('data-id');
+	        var comment_box_id = '#aw-comment-box-' + $(this).attr('data-type') + '-' +$(this).attr('data-id');
 			
 	        if ($(comment_box_id).length > 0)
 	        {

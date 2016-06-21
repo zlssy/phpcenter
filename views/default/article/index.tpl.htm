@@ -15,7 +15,7 @@
                             <?php } ?>
                             <?php } ?>
 
-                            <?php if ($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator']) { ?><span class="icon-inverse aw-edit-topic"><i class="icon icon-edit"></i> <?php if (sizeof($this->article_topics) == 0) { ?><?php _e('添加话题')?><?php } ?></span><?php } ?>
+                            <?php if ($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator']) { ?><span class="icon-inverse aw-edit-topic"><i class="icon icon-edit"></i> <?php if (sizeof($this->article_topics) == 0) { ?><?php _e('添加')?><?php } ?></span><?php } ?>
                         </div>
                     </div>
                     <div class="aw-mod aw-question-detail">
@@ -51,7 +51,7 @@
                             <?php } ?>
                         </div>
                         <div class="mod-body">
-                            <div class="content markitup-box">
+                            <div class="content markitup-box" style="overflow:hidden;">
                                 <?php echo $this->article_info['message']; ?>
 
                                 <?php if ($this->article_info['attachs']) {  ?>
@@ -77,7 +77,7 @@
                             <div class="meta clearfix">
                                 <div class="aw-article-vote pull-left<?php if (!$this->user_id OR $this->user_id == $this->article_info['uid']) { ?> disabled<?php } ?>">
                                     <a href="javascript:;" class="agree<?php if ($this->article_info['vote_info']['rating'] == 1) { ?> active<?php } ?>" onclick="AWS.User.article_vote($(this), <?php echo $this->article_info['id']; ?>, 1);"><i class="icon icon-agree"></i> <b><?php echo $this->article_info['votes']; ?></b></a>
-                                    <?php if ($this->user_id AND $this->user_id != $this->article_info['uid']) { ?>
+                                    <?php if (0 && $this->user_id AND $this->user_id != $this->article_info['uid']) { ?>
                                     <a href="javascript:;" class="disagree<?php if ($this->article_info['vote_info']['rating'] == -1) { ?> active<?php } ?>" onclick="AWS.User.article_vote($(this), <?php echo $this->article_info['id']; ?>, -1);"><i class="icon icon-disagree"></i></a>
                                     <?php } ?>
                                 </div>
@@ -177,7 +177,7 @@
                         <?php if ($this->article_info['lock']) { ?>
                         <p align="center"><?php _e('该文章目前已经被锁定, 无法添加新评论'); ?></p>
                         <?php } else if (!$this->user_id) { ?>
-                        <p align="center"><?php _e('要回复文章请先<a href="account/login/">登录</a>或<a href="account/register/">注册</a>'); ?></p>
+                        <p align="center"><?php _e('要回复文章请先'); ?><a href="account/login/"><?php _e('登录'); ?></a><?php if (get_setting('register_type') == 'open') { ?><?php _e('或'); ?><a href="account/register/"><?php _e('注册'); ?></a><?php } ?></p>
                         <?php } else { ?>
                         <form action="article/ajax/save_comment/" onsubmit="return false;" method="post" id="answer_form">
                         <input type="hidden" name="post_hash" value="<?php echo new_post_hash(); ?>" />
@@ -273,7 +273,7 @@
                     <!-- 相关问题 -->
                     <div class="aw-mod aw-text-align-justify question-related-list">
                         <div class="mod-head">
-                            <h3><?php _e('相关问题'); ?></h3>
+                            <h3><?php _e('相关帖子'); ?></h3>
                         </div>
                         <div class="mod-body font-size-12">
                             <ul>
@@ -304,6 +304,7 @@
         AWS.at_user_lists('#wmd-input');
 
         AWS.Init.init_article_comment_box($('.aw-article-comment'));
+
     });
 </script>
 

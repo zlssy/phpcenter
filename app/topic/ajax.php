@@ -537,7 +537,7 @@ class ajax extends AWS_CONTROLLER
 			case 'question':
 				if (!$question_info = $this->model('question')->get_question_info_by_id($_POST['item_id']))
 				{
-					H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('指定问题不存在')));
+					H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('指定帖子不存在')));
 				}
 
 				if (!$this->user_info['permission']['edit_question_topic'] AND $this->user_id != $question_info['published_uid'])
@@ -576,7 +576,7 @@ class ajax extends AWS_CONTROLLER
 			case 'question':
 				if (!$question_info = $this->model('question')->get_question_info_by_id($_POST['item_id']))
 				{
-					H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('指定问题不存在')));
+					H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('指定帖子不存在')));
 				}
 
 				if (!$this->user_info['permission']['edit_question_topic'] AND $this->user_id != $question_info['published_uid'])
@@ -630,7 +630,7 @@ class ajax extends AWS_CONTROLLER
 			case 'question':
 				if ($question_info['lock'] AND ! ($this->user_info['permission']['is_administortar'] or $this->user_info['permission']['is_moderator']))
 				{
-					H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('锁定问题不能添加话题')));
+					H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('锁定帖子不能添加话题')));
 				}
 			break;
 
@@ -644,7 +644,7 @@ class ajax extends AWS_CONTROLLER
 
 		if (sizeof($this->model('topic')->get_topics_by_item_id($_POST['item_id'], $_POST['type'])) >= get_setting('question_topics_limit') AND get_setting('question_topics_limit'))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('单个问题或文章话题数量最多为 %s 个, 请调整话题数量', get_setting('question_topics_limit'))));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('单个帖子或文章话题数量最多为 %s 个, 请调整话题数量', get_setting('question_topics_limit'))));
 		}
 
 		if (! $topic_id = $this->model('topic')->save_topic($_POST['topic_title'], $this->user_id, $this->user_info['permission']['create_topic']))

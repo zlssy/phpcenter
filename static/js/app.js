@@ -77,12 +77,12 @@ $(document).ready(function ()
 
     AWS.show_card_box('.topic-tag, .aw-topic-name, .aw-topic-img', 'topic');
 
-    //文章页添加评论, 话题添加 绑定事件
+    //文章页添加评论, 标签添加 绑定事件
     AWS.Init.init_article_comment_box('.aw-article-content .aw-article-comment');
 
     AWS.Init.init_topic_edit_box('.aw-edit-topic');
 
-    //话题编辑下拉菜单click事件
+    //标签编辑下拉菜单click事件
     $(document).on('click', '.aw-edit-topic-box .aw-dropdown-list li', function ()
     {
         $(this).parents('.aw-edit-topic-box').find('#aw_edit_topic_title').val($(this).text());
@@ -90,7 +90,7 @@ $(document).ready(function ()
         $(this).parents('.aw-edit-topic-box').find('.aw-dropdown').hide();
     });
 
-    //话题删除按钮
+    //标签删除按钮
     $(document).on('click', '.topic-tag .close',  function()
     {
         var data_type = $(this).parents('.aw-topic-bar').attr('data-type'),
@@ -191,7 +191,7 @@ $(document).ready(function ()
         });
     });
 
-    //话题小卡片关注更新缓存
+    //标签小卡片关注更新缓存
     $(document).on('click', '.aw-card-tips-topic .follow', function ()
     {
         var topic_id = $(this).parents('.aw-card-tips').find('.name').attr('data-id');
@@ -242,14 +242,27 @@ $(document).ready(function ()
         {
             if ($(window).scrollTop() > ($(window).height() / 2))
             {
-                $('.aw-back-top').fadeIn();
+                $('.aw-back-top').stop().fadeIn();
             }
             else
             {
-                $('.aw-back-top').fadeOut();
+                $('.aw-back-top').stop().fadeOut();
             }
         });
     }
+
+    //兼容umeditor全屏按钮没有滚动条(临时解决方案)
+    setTimeout(function(){
+        var $edui_btn = $('.edui-btn-fullscreen'), $edui_container = $('.edui-container');
+        if($edui_btn.length) {
+            $edui_btn.click(function(){
+                var editor_position = $edui_container.css('position');
+                if(editor_position == 'relative') { //当不是全屏的时候竖向滚动条加载出来
+                    $('body').css('overflowY', 'visible');
+                }
+            });
+        }
+    }, 0);
 });
 
 $(window).on('hashchange', function() {

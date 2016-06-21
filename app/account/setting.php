@@ -135,13 +135,18 @@ class setting extends AWS_CONTROLLER
 
 	public function security_action()
 	{
+
 		$this->crumb(AWS_APP::lang()->_t('安全设置'), '/account/setting/security/');
+
+        TPL::import_js('js/md5.js');
 
 		TPL::output('account/setting/security');
 	}
 
 	public function verify_action()
 	{
+        HTTP::error_404();
+
 		$this->crumb(AWS_APP::lang()->_t('申请认证'), '/account/setting/verify/');
 
 		TPL::assign('verify_apply', $this->model('verify')->fetch_apply($this->user_id));

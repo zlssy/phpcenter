@@ -1,5 +1,9 @@
 <?php TPL::output('m/header.tpl.htm'); ?>
 
+<style>
+	.edui-container .edui-toolbar {border-bottom:none;}
+</style>
+
 <?php if ($this->redirect_message) { ?>
 <?php foreach ($this->redirect_message AS $key => $message) { ?>
 	<div class="alert alert-warning"><?php echo $message; ?></div>
@@ -8,7 +12,7 @@
 
 	<!-- 内容 -->
 	<div class="container padding-0">
-		<!-- 话题bar -->
+		<!-- 标签bar -->
 		<div class="aw-topic-bar clearfix" data-id="<?php echo $this->question_info['question_id']; ?>" data-type="question">
 			<div class="tag-bar">
 				<?php if ($this->question_topics) { ?>
@@ -23,7 +27,7 @@
 				<?php } ?>
 			</div>
 		</div>
-		<!-- end 话题bar -->
+		<!-- end 标签bar -->
 
 		<!-- 问题详情 -->
 		<div class="aw-question-detail">
@@ -133,7 +137,7 @@
 							<div class="meta">
 								<span class="operate">
 									<a class="answer_vote agree <?php if ($val['agree_status'] == 1) { ?> active<?php } ?>" <?php if ($this->user_id) { ?>onclick="AWS.User.agree_vote($(this), <?php echo $val['answer_id']; ?>)"<?php } ?>><i class="icon icon-agree"></i> <b><?php echo $val['agree_count']; ?></b></a>
-									<?php if ($this->user_id != $val['uid']) { ?>
+									<?php if (0 && $this->user_id != $val['uid']) { ?>
 									<a class="answer_vote disagree <?php if ($val['agree_status'] == -1) { ?> active<?php } ?>" <?php if ($this->user_id) { ?>onclick="AWS.User.disagree_vote($(this), <?php echo $val['answer_id']; ?>)"<?php }?>><i class="icon icon-disagree"></i></a>
 									<?php } ?>
 								</span>
@@ -176,35 +180,36 @@
 		<!-- end 折叠回复 -->
 
 		<!-- 回复box -->
-		<div class="aw-replay-box question">
-			<a name="answer_form"></a>
-			<?php if ($_GET['single']) { ?>
-			<a href="question/<?php echo $this->question_info['question_id']; ?>" class="aw-load-more"><?php _e('查看全部回答'); ?></a>
-			<?php } else if ($this->next_page) { ?>
-			<a href="m/question/<?php echo $this->question_info['question_id']; ?>?page=<?php echo $this->next_page; ?>" class="aw-load-more"><?php _e('下一页'); ?></a>
-			<?php } ?>
+		<div class="top_smile_box need_move">
+			<div class="aw-replay-box question">
+				<a name="answer_form"></a>
+				<?php if ($_GET['single']) { ?>
+				<a href="question/<?php echo $this->question_info['question_id']; ?>" class="aw-load-more"><?php _e('查看全部回答'); ?></a>
+				<?php } else if ($this->next_page) { ?>
+				<a href="m/question/<?php echo $this->question_info['question_id']; ?>?page=<?php echo $this->next_page; ?>" class="aw-load-more"><?php _e('下一页'); ?></a>
+				<?php } ?>
 
-			<?php if (!$this->user_id) { ?>
-			<a class="aw-load-more no-border" id="load_index_actions" href="account/login/"><?php _e('登录进行回复'); ?></a>
-			<?php } else if ($this->question_info['lock']) { ?>
-			<p align="center"><?php _e('该问题目前已经被锁定, 无法添加新回复'); ?></p>
-			<?php } else if ($this->user_answered) { ?>
-			<p align="center"><?php _e('一个问题只能回复一次'); ?><?php if (get_setting('answer_edit_time')) { ?>, <?php _e('你可以在发言后 %s 分钟内编辑回复过的内容', get_setting('answer_edit_time')); ?><?php } ?></p>
-			<?php } else if ((get_setting('answer_self_question') == 'N') && ($this->user_id == $this->question_info['published_uid'])) { ?>
-			<p align="center"><?php _e('不能回复自己发布的问题, 你可以修改问题内容'); ?></p>
-			<?php } else { ?>
-			<form action="question/ajax/save_answer/" onsubmit="return false;" method="post" id="answer_form" class="question_answer_form">
-				<input type="hidden" name="attach_access_key" value="<?php echo $this->attach_access_key; ?>" />
-				<input type="hidden" name="post_hash" value="<?php echo new_post_hash(); ?>" />
-				<input type="hidden" name="question_id" value="<?php echo $this->question_info['question_id']; ?>" />
+				<?php if (!$this->user_id) { ?>
+				<a class="aw-load-more no-border" id="load_index_actions" href="m/login/"><?php _e('登录进行回复'); ?></a>
+				<?php } else if ($this->question_info['lock']) { ?>
+				<p align="center"><?php _e('该帖子目前已经被锁定, 无法添加新回复'); ?></p>
+				<?php } else if ($this->user_answered) { ?>
+				<p align="center"><?php _e('一个帖子只能回复一次'); ?><?php if (get_setting('answer_edit_time')) { ?>, <?php _e('你可以在发言后 %s 分钟内编辑回复过的内容', get_setting('answer_edit_time')); ?><?php } ?></p>
+				<?php } else if ((get_setting('answer_self_question') == 'N') && ($this->user_id == $this->question_info['published_uid'])) { ?>
+				<p align="center"><?php _e('不能回复自己发布的帖子, 你可以修改帖子内容'); ?></p>
+				<?php } else { ?>
+				<form action="question/ajax/save_answer/" onsubmit="return false;" method="post" id="answer_form" class="question_answer_form">
+					<input type="hidden" name="attach_access_key" value="<?php echo $this->attach_access_key; ?>" />
+					<input type="hidden" name="post_hash" value="<?php echo new_post_hash(); ?>" />
+					<input type="hidden" name="question_id" value="<?php echo $this->question_info['question_id']; ?>" />
 
-				<div class="mod-head">
-					<a href="m/people/"><img class="img" width="20" src="<?php echo get_avatar_url($this->user_id, 'mid'); ?>" alt="" /></a>
-					<?php echo $this->user_info['user_name']; ?>
+					<div class="mod-head">
+						<a href="m/people/"><img class="img" width="20" src="<?php echo get_avatar_url($this->user_id, 'mid'); ?>" alt="" /></a>
+						<?php echo $this->user_info['user_name']; ?>
 					<span class="pull-right">
 						<?php if (!$this->question_focus) { ?>
 						<label>
-							<input type="checkbox" checked="checked" value="1" name="auto_focus" /> <?php _e('关注问题'); ?>
+							<input type="checkbox" checked="checked" value="1" name="auto_focus" /> <?php _e('关注帖子'); ?>
 						</label>
 						<?php } ?>
 						<?php if (get_setting('anonymous_enable') == 'Y') { ?>
@@ -213,33 +218,27 @@
 						</label>
 						<?php } ?>
 					</span>
-				</div>
-				<div class="mod-body">
-					<textarea class="autosize form-control textarea_content" rows="5" name="answer_content"><?php echo htmlspecialchars($this->draft_content['message']); ?></textarea>
-				</div>
-				<div class="mod-footer">
-					<a class="btn btn-success btn-normal pull-right" onclick="AWS.ajax_post($('#answer_form'), AWS.ajax_processer, 'reply');"><?php _e('回复'); ?></a>
-
-					<?php if ($this->human_valid) { ?>
-					<div class="captcha pull-right clearfix">
-						<input type="text" class="form-control" name="seccode_verify" placeholder="<?php _e('验证码'); ?>" />
-						<img src="" class="img" onclick="this.src = G_BASE_URL + '/account/captcha/' + Math.floor(Math.random() * 10000);" id="captcha" />
 					</div>
-					<?php } ?>
-
-					<!-- 上传控件 -->
-					<div class="aw-upload-box">
-						<a class="icon icon-pic">
-							<span class="tips">上传图片</span>
-						</a>
+					<div class="mod-body">
+						<textarea rows="5" name="answer_content" id="answer_content" style="width:100%;height:160px;"><?php echo $this->draft_content['message']; ?></textarea>
 					</div>
+					<div class="mod-footer clearfix">
+						<div class="extra_btn_wrap">
+							<a class="smile_wrap smile_control" href="javascript:;">表情</a>
+						</div>
+						<a class="btn btn-success btn-normal pull-right" onclick="AWS.ajax_post($('#answer_form'), AWS.ajax_processer, 'reply');"><?php _e('回复'); ?></a>
 
-					<!-- end 上传控件 -->
-					<div class="upload-container"></div>
+						<?php if ($this->human_valid) { ?>
+						<div class="captcha pull-right clearfix">
+							<input type="text" class="form-control" name="seccode_verify" placeholder="<?php _e('验证码'); ?>" />
+							<img src="" class="img" onclick="this.src = G_BASE_URL + '/account/captcha/' + Math.floor(Math.random() * 10000);" id="captcha" />
+						</div>
+						<?php } ?>
 
-				</div>
-			</form>
-			<?php } ?>
+					</div>
+				</form>
+				<?php } ?>
+			</div>
 		</div>
 		<!-- end 回复box -->
 
@@ -254,9 +253,9 @@
 	var USER_ANSWERED = '<?php echo $this->user_answered; ?>';
 
 	$(document).ready(function () {
-		var fileupload = new FileUpload('file', '.aw-upload-box .icon-pic', '.aw-replay-box .upload-container', G_BASE_URL + '/publish/ajax/attach_upload/id-answer__attach_access_key' + '-' + ATTACH_ACCESS_KEY, {'deleteBtnTemplate' : '<a class="delete-file"><i class="icon icon-delete"></i></a>', 'insertBtnTemplate' : '<a class="insert-file"><i class="icon icon-insert"></i></a>', 'editor': $('.textarea_content')})
 
 		// 自动保存草稿
+		/*
 		if ($('#answer_form textarea').length)
 		{
 			$('#answer_form textarea').bind('keyup', function() {
@@ -268,6 +267,7 @@
 				}
 			});
 		}
+		*/
 
 		// 折叠回复
 		$.each($('li.aw-item'), function (i, e) {
@@ -307,7 +307,14 @@
 			}
 		});
 
-		
+		var editor = UM.getEditor('answer_content', {toolbar : []});
+		if(typeof UM.instances === 'undefined')
+		{
+			UM.instances = [];
+		}
+		UM.instances.push(editor);
+
+		AWS.emotion.inject({editor:editor, is_parse:true});
 	});
 
 </script>

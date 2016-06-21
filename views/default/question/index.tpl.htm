@@ -1,5 +1,8 @@
 <?php TPL::output('global/header.tpl.htm'); ?>
 
+<style>
+	#c_log_list img {max-width:690px;}
+</style>
 <div class="aw-container-wrap">
 	<?php if ($this->redirect_message) { ?>
 	<div class="container">
@@ -29,7 +32,7 @@
 						</span>
 						<?php } ?>, <?php _e('都不是'); ?>? <a href="javascript:;" onclick="$('#question_topic_editor .aw-edit-topic').click();$(this).parents('.aw-notopic-sort').hide();"> <?php _e('点此添加话题'); ?></a>
 						<?php } else { ?>
-						<?php _e('没有归属话题, 请帮问题添加话题'); ?>, <a href="javascript:;" onclick="$('#question_topic_editor .aw-edit-topic').click(); $(this).parents('.aw-notopic-sort').hide();"><?php _e('点此添加话题'); ?></a>
+						<?php _e('没有归属话题, 请帮帖子添加话题'); ?>, <a href="javascript:;" onclick="$('#question_topic_editor .aw-edit-topic').click(); $(this).parents('.aw-notopic-sort').hide();"><?php _e('点此添加话题'); ?></a>
 						<?php } ?>
 					</div>
 					<?php } ?>
@@ -63,17 +66,17 @@
 										<ul class="aw-dropdown-list">
 											<li>
 												<?php if ($_GET['column'] == 'log') { ?>
-													<a href="question/<?php echo $this->question_info['question_id']; ?>"><?php _e('问题讨论'); ?></a>
+													<a href="question/<?php echo $this->question_info['question_id']; ?>"><?php _e('帖子讨论'); ?></a>
 												<?php } else { ?>
 													<a href="question/<?php echo $this->question_info['question_id']; ?>?column=log&rf=false" rel="nofollow"><?php _e('修改记录'); ?></a>
 												<?php } ?>
 											</li>
 											<?php if ($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator']) { ?>
 											<li>
-												<a href="javascript:;" onclick="AWS.ajax_request(G_BASE_URL + '/question/ajax/lock/', 'question_id=<?php echo $this->question_info['question_id']; ?>');"><?php if ($this->question_info['lock']) { ?><?php _e('解除锁定'); ?><?php } else { ?><?php _e('锁定问题'); ?><?php } ?></a>
+												<a href="javascript:;" onclick="AWS.ajax_request(G_BASE_URL + '/question/ajax/lock/', 'question_id=<?php echo $this->question_info['question_id']; ?>');"><?php if ($this->question_info['lock']) { ?><?php _e('解除锁定'); ?><?php } else { ?><?php _e('锁定帖子'); ?><?php } ?></a>
 											</li>
 											<li>
-												<a href="javascript:;" onclick="AWS.dialog('confirm', {'message' : '<?php _e('确认删除?'); ?>'}, function(){AWS.ajax_request(G_BASE_URL + '/question/ajax/remove_question/', 'question_id=<?php echo $this->question_info['question_id']; ?>');});"><?php _e('删除问题'); ?></a>
+												<a href="javascript:;" onclick="AWS.dialog('confirm', {'message' : '<?php _e('确认删除?'); ?>'}, function(){AWS.ajax_request(G_BASE_URL + '/question/ajax/remove_question/', 'question_id=<?php echo $this->question_info['question_id']; ?>');});"><?php _e('删除帖子'); ?></a>
 											</li>
 											<?php } ?>
 											<?php if (($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator'] OR (!$this->question_info['lock'] AND $this->user_info['permission']['redirect_question'])) AND $this->user_id) { ?>
@@ -81,7 +84,7 @@
 											<?php if ($this->question_info['redirect']) { ?>
 												<a href="javascript:;" onclick="AWS.ajax_request(G_BASE_URL + '/question/ajax/redirect/', 'item_id=<?php echo $this->question_info['question_id']; ?>');"><?php _e('撤消重定向'); ?></a>
 											<?php } else { ?>
-												<a href="javascript:;" onclick="AWS.dialog('redirect', <?php echo $this->question_info['question_id']; ?>);"><?php _e('问题重定向'); ?></a>
+												<a href="javascript:;" onclick="AWS.dialog('redirect', <?php echo $this->question_info['question_id']; ?>);"><?php _e('帖子重定向'); ?></a>
 											<?php } ?>
 											</li>
 											<?php } ?>
@@ -91,7 +94,7 @@
 												</li>
 											<?php } ?>
 											<?php if ($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator']) { ?>
-												<li><a href="javascript:;" onclick="AWS.ajax_request(G_BASE_URL + '/question/ajax/set_recommend/', 'action=<?php if ($this->question_info['is_recommend']) { ?>un<?php } ?>set&question_id=<?php echo $this->question_info['question_id']; ?>');"><?php if ($this->question_info['is_recommend']) { ?><?php _e('取消推荐'); ?><?php } else { ?><?php _e('推荐问题'); ?><?php } ?></a>
+												<li><a href="javascript:;" onclick="AWS.ajax_request(G_BASE_URL + '/question/ajax/set_recommend/', 'action=<?php if ($this->question_info['is_recommend']) { ?>un<?php } ?>set&question_id=<?php echo $this->question_info['question_id']; ?>');"><?php if ($this->question_info['is_recommend']) { ?><?php _e('取消推荐'); ?><?php } else { ?><?php _e('推荐帖子'); ?><?php } ?></a>
 												</li>
 												<li>
 													<a href="javascript:;" onclick="AWS.dialog('recommend', {'type': 'question', 'item_id': <?php echo $this->question_info['question_id']?>, 'focus_id': <?php if ($this->question_info['chapter_id']) { echo $this->question_info['chapter_id']; } else { ?>''<?php } ?>});"><?php _e('添加到帮助中心'); ?></a>
@@ -105,7 +108,7 @@
 							<?php } ?>
 						</div>
 						<div class="mod-body">
-							<div class="content markitup-box">
+							<div class="content markitup-box" style="overflow:hidden;">
 								<?php echo $this->question_info['question_detail']; ?>
 
 								<?php if ($this->question_info['attachs']) {  ?>
@@ -153,10 +156,10 @@
 							<div class="meta">
 								<span class="text-color-999"><?php echo date_friendly($this->question_info['add_time'], 604800, 'Y-m-d'); ?></span>
 
-								<a data-id="<?php echo $this->question_info['question_id']; ?>" data-type="question" class="aw-add-comment text-color-999 <?php if ($this->question_info['comment_count'] > 0) {?>active<?php }?>" data-comment-count="<?php echo $this->question_info['comment_count']; ?>" data-first-click="<?php if ($this->question_info['comment_count'] == 0) {?>hide<?php }?>"><i class="icon icon-comment"></i><?php if ($this->question_info['comment_count']) { ?><?php _e('%s 条评论', $this->question_info['comment_count']); ?><?php } else { ?><?php _e('添加评论'); ?><?php } ?></a>
+								<!--<a data-id="<?php echo $this->question_info['question_id']; ?>" data-type="question" class="aw-add-comment text-color-999 <?php if ($this->question_info['comment_count'] > 0) {?>active<?php }?>" data-comment-count="<?php echo $this->question_info['comment_count']; ?>" data-first-click="<?php if ($this->question_info['comment_count'] == 0) {?>hide<?php }?>"><i class="icon icon-comment"></i><?php if ($this->question_info['comment_count']) { ?><?php _e('%s 条评论', $this->question_info['comment_count']); ?><?php } else { ?><?php _e('添加评论'); ?><?php } ?></a>-->
 
 								<?php if ($this->user_id) { ?>
-								<a class="text-color-999 aw-invite-replay"><i class="icon icon-invite"></i><?php _e('邀请'); ?> <?php if (sizeof($this->invite_users) > 0){ ?><em class="badge badge-info"><?php echo count($this->invite_users); ?></em><?php } ?></a>
+								<a class="text-color-999 aw-invite-replay"><i class="icon icon-invite"></i><?php _e('邀请'); ?> <!--<?php if (sizeof($this->invite_users) > 0){ ?><em class="badge badge-info"><?php echo count($this->invite_users); ?></em><?php } ?>--></a>
 								<?php } ?>
 
 								<?php if ((!$this->question_info['lock'] AND ($this->question_info['published_uid'] == $this->user_id OR $this->user_info['permission']['edit_question'])) OR $this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator']) { ?><a class="text-color-999" href="publish/<?php echo $this->question_info['question_id']; ?>"><i class="icon icon-edit"></i><?php _e('编辑'); ?></a><?php } ?>
@@ -166,7 +169,7 @@
 								<a class="text-color-999 aw-add-question-related hidden-xs"><i class="icon icon-bind"></i> <?php _e('相关链接'); ?></a>
 								<?php } ?>
 								<div class="pull-right more-operate">
-									<?php if ($this->user_id != $this->question_info['published_uid'] AND $this->user_id) { ?><a <?php if (!$this->question_thanks) { ?>data-placement="bottom" title="" data-toggle="tooltip" data-original-title="<?php _e('感谢提问者'); ?>" onclick="AWS.User.question_thanks($(this), <?php echo $this->question_info['question_id']; ?>);"<?php } ?> class="aw-icon-thank-tips text-color-999"><i class="icon icon-thank"></i><?php if ($this->question_thanks) { ?><?php _e('已感谢'); ?><?php } else { ?><?php _e('感谢'); ?><?php } ?></a>
+									<?php if (0 && $this->user_id != $this->question_info['published_uid'] AND $this->user_id) { ?><a <?php if (!$this->question_thanks) { ?>data-placement="bottom" title="" data-toggle="tooltip" data-original-title="<?php _e('感谢回复者'); ?>" onclick="AWS.User.question_thanks($(this), <?php echo $this->question_info['question_id']; ?>);"<?php } ?> class="aw-icon-thank-tips text-color-999"><i class="icon icon-thank"></i><?php if ($this->question_thanks) { ?><?php _e('已感谢'); ?><?php } else { ?><?php _e('感谢'); ?><?php } ?></a>
 									<?php } ?>
 
 									<!-- <a class="text-color-999"  onclick="AWS.dialog('shareOut', {item_type:'question', item_id:<?php echo $this->question_info['question_id']; ?>});"> -->
@@ -182,6 +185,7 @@
 									</div>
 
 									<?php if ($this->user_id) { ?><a href="javascript:;" class="text-color-999" onclick="AWS.dialog('report', {item_type:'question', item_id:<?php echo $this->question_info['question_id']; ?>})"><i class="icon icon-report"></i><?php _e('举报'); ?></a><?php } ?>
+                                    <a class="text-color-999" id="answer_quick"><i class="icon icon-edit"></i>回复</a>
 								</div>
 							</div>
 						</div>
@@ -255,7 +259,7 @@
 					<?php if ($_GET['column'] == 'log') { ?>
 					<div class="aw-mod aw-question-edit">
 						<div class="mod-head common-head">
-							<h2><span class="pull-right"><a class="text-color-999" href="question/<?php echo $this->question_info['question_id']; ?>"><?php _e('返回问题'); ?> »</a></span><?php _e('问题修改日志'); ?></h2>
+							<h2><span class="pull-right"><a class="text-color-999" href="question/<?php echo $this->question_info['question_id']; ?>"><?php _e('返回帖子'); ?> »</a></span><?php _e('帖子修改日志'); ?></h2>
 						</div>
 						<div class="mod-body">
 							<ul id="c_log_list"></ul>
@@ -272,13 +276,13 @@
 					<div class="aw-mod aw-question-comment">
 						<div class="mod-head">
 							<ul class="nav nav-tabs aw-nav-tabs active">
-								<?php if ($_GET['single']) { ?>
-								<!--<li><a href="question/<?php echo $this->question_info['question_id']; ?>"><?php _e('全部回答'); ?></a></li>-->
-								<?php } else if (($this->answer_count OR $_GET['uid']) AND $this->user_id) { ?>
-								<li<?php if ($_GET['uid'] == 'focus') { ?> class="active"<?php } ?>><a href="question/<?php echo $this->question_info['question_id']; ?>?uid=focus"><?php _e('关注的人'); ?></a></li>
-								<li<?php if ($_GET['sort_key'] == 'add_time') { ?> class="active"<?php } ?>><a href="question/<?php echo $this->question_info['question_id']; ?>?sort_key=add_time&sort=<?php if (($_GET['sort_key'] == 'add_time') && $_GET['sort'] == 'ASC') { ?>DESC<?php } else { ?>ASC<?php } ?>"><?php _e('时间'); ?><?php if (($_GET['sort_key'] == 'add_time') && $_GET['sort'] == 'DESC') { ?> <i class="icon icon-down"></i><?php } else { ?> <i class="icon icon-up"></i><?php } ?></a></li>
-								<li<?php if ((!$_GET['uid'] && !$_GET['sort_key']) || $_GET['sort_key'] == 'agree_count') { ?> class="active"<?php } ?>><a href="question/<?php echo $this->question_info['question_id']; ?>&sort_key=agree_count&sort=DESC"><?php _e('票数'); ?></a></li>
-								<?php } ?>
+                                <?php if ($_GET['single']) { ?>
+                                <!--<li><a href="question/<?php echo $this->question_info['question_id']; ?>"><?php _e('全部回答'); ?></a></li>-->
+                                <?php } else if (($this->answer_count OR $_GET['uid']) AND $this->user_id) { ?>
+                                <li<?php if ($_GET['uid'] == 'focus') { ?> class="active"<?php } ?>><a href="question/<?php echo $this->question_info['question_id']; ?>?uid=focus"><?php _e('关注的人'); ?></a></li>
+                                <li<?php if ($_GET['sort_key'] == 'agree_count') { ?> class="active"<?php } ?>><a href="question/<?php echo $this->question_info['question_id']; ?>&sort_key=agree_count&sort=DESC"><?php _e('票数'); ?></a></li>
+                                <li<?php if ((!$_GET['uid'] && !$_GET['sort_key']) || $_GET['sort_key'] == 'add_time') { ?> class="active"<?php } ?>> <a href="question/<?php echo $this->question_info['question_id']; ?>?sort_key=add_time&sort=<?php if (($_GET['sort_key'] == 'add_time') && $_GET['sort'] == 'ASC') { ?>DESC<?php } else { ?>ASC<?php } ?>"><?php _e('时间'); ?><?php if (($_GET['sort_key'] == 'add_time') && $_GET['sort'] == 'DESC') { ?> <i class="icon icon-down"></i><?php } else { ?> <i class="icon icon-up"></i><?php } ?></a></li>
+                                <?php } ?>
 
 								<h2 class="hidden-xs"><?php if ($_GET['single']) { ?><?php _e('查看单个回答'); ?><?php } else { ?><?php _e('%s 个回复', $this->answer_count); ?><?php } ?></h2>
 							</ul>
@@ -361,9 +365,6 @@
 											<!-- 投票栏 -->
 											<span class="operate">
 												<a class="agree<?php if ($this->user_info['user_name'] == $val['user_info']['user_name']) { ?> disabled<?php } ?> <?php if ($val['agree_status'] == 1) { ?>active<?php } ?> <?php if (!$this->user_id) { ?>disabled<?php } ?>" <?php if ($this->user_id && $this->user_info['user_name'] != $val['user_info']['user_name']) { ?>onclick="AWS.User.agree_vote(this, '<?php echo $this->user_info['user_name']; ?>', <?php echo $val['answer_id']; ?>);"<?php } ?>><i data-placement="right" title="" data-toggle="tooltip" class="icon icon-agree" data-original-title="赞同回复"></i> <b class="count"><?php echo $val['agree_count']; ?></b></a>
-												<?php if ($this->user_id AND $this->user_info['user_name'] != $val['user_info']['user_name']) { ?>
-												<a class="disagree <?php if ($val['agree_status'] == -1) { ?>active<?php } ?>" onclick="AWS.User.disagree_vote(this, '<?php echo $this->user_info['user_name']; ?>', <?php echo $val['answer_id']; ?>)"><i data-placement="right" title="" data-toggle="tooltip" class="icon icon-disagree" data-original-title="对回复持反对意见"></i></a>
-												<?php } ?>
 											</span>
 											<!-- end 投票栏 -->
 											<span class="operate">
@@ -374,11 +375,6 @@
 												<?php if ($this->user_id) { ?>
 													<?php if (($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator']) OR ($val['uid'] == $this->user_id AND ((TIMESTAMP - $val['add_time']) < (get_setting('answer_edit_time') * 60) OR (!get_setting('answer_edit_time'))))) { ?>
 													<a class="text-color-999" href="javascript:;" onclick="AWS.dialog('commentEdit', {answer_id:<?php echo $val['answer_id']; ?>,attach_access_key:'<?php echo $this->attach_access_key; ?>'});"><i class="icon icon-edit"></i> <?php _e('编辑'); ?></a>
-													<?php } ?>
-													<?php if ($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator']) { ?>
-													<a href="javascript:;" onclick="AWS.User.answer_force_fold($(this), <?php echo $val['answer_id']; ?>);" class="text-color-999"><i class="icon icon-fold"></i> <?php if ($val['force_fold']) { ?><?php _e('撤消折叠'); ?><?php } else { ?><?php _e('折叠'); ?><?php } ?></a>
-													<?php } else { ?>
-													<a class="aw-icon-thank-tips text-color-999" data-original-title="<?php _e('这是一个没有价值的回复'); ?>" data-toggle="tooltip" title="" data-placement="bottom" onclick="AWS.User.answer_user_rate($(this), 'uninterested', <?php echo $val['answer_id']; ?>);"><i class="icon icon-fold"></i><?php if ($val['user_rated_uninterested']) { ?><?php _e('撤消没有帮助'); ?><?php } else { ?><?php _e('没有帮助'); ?><?php } ?></a>
 													<?php } ?>
 
 													<a href="javascript:;" onclick="AWS.dialog('favorite', {item_id:<?php echo $val['answer_id']; ?>, item_type:'answer'});" class="text-color-999"><i class="icon icon-favor"></i> <?php _e('收藏'); ?></a>
@@ -399,9 +395,6 @@
 														</ul>
 													</div>
 												</div>
-												<?php if (($this->user_info['permission']['is_moderator'] OR $this->user_info['permission']['is_administortar']) AND !$this->question_info['best_answer']) { ?>
-												<a href="javascript:;" onclick="AWS.ajax_request(G_BASE_URL + '/question/ajax/set_best_answer/', 'answer_id=<?php echo $val['answer_id']; ?>');" class="text-color-999"><i class="icon icon-best"></i><?php _e('最佳回复'); ?></a>
-												<?php } ?>
 											</div>
 											<!-- end 可显示/隐藏的操作box -->
 
@@ -439,13 +432,13 @@
 					<div class="aw-mod aw-replay-box question">
 						<a name="answer_form"></a>
 						<?php if ($this->question_info['lock']) { ?>
-						<p align="center"><?php _e('该问题目前已经被锁定, 无法添加新回复'); ?></p>
+						<p align="center"><?php _e('该帖子目前已经被锁定, 无法添加新回复'); ?></p>
 						<?php } else if (!$this->user_id) { ?>
-						<p align="center"><?php _e('要回复问题请先<a href="account/login/">登录</a>或<a href="account/register/">注册</a>'); ?></p>
+						<p align="center"><?php _e('要回复帖子请先'); ?><a href="account/login/"><?php _e('登录'); ?></a><?php if (get_setting('register_type') == 'open') { ?><?php _e('或'); ?><a href="account/register/"><?php _e('注册'); ?></a><?php } ?></p>
 						<?php } else if ($this->user_answered) { ?>
-						<p align="center"><?php _e('一个问题只能回复一次'); ?><?php if (get_setting('answer_edit_time')) { ?>, <?php _e('你可以在发言后 %s 分钟内编辑回复过的内容', get_setting('answer_edit_time')); ?><?php } ?></p>
+						<p align="center"><?php _e('一个帖子只能回复一次'); ?><?php if (get_setting('answer_edit_time')) { ?>, <?php _e('你可以在发言后 %s 分钟内编辑回复过的内容', get_setting('answer_edit_time')); ?><?php } ?></p>
 						<?php } else if ((get_setting('answer_self_question') == 'N') && ($this->user_id == $this->question_info['published_uid'])) { ?>
-						<p align="center"><?php _e('不能回复自己发布的问题, 你可以修改问题内容'); ?></p>
+						<p align="center"><?php _e('不能回复自己发布的帖子, 你可以修改帖子内容'); ?></p>
 						<?php } else { ?>
 						<form action="question/ajax/save_answer/" onsubmit="return false;" method="post" id="answer_form" class="question_answer_form">
 			        	<input type="hidden" name="post_hash" value="<?php echo new_post_hash(); ?>" />
@@ -461,7 +454,7 @@
 								<?php } ?>
 								<?php if (!$this->question_focus) { ?>
 								<label class="pull-right">
-									<input type="checkbox" checked="checked" value="1" name="auto_focus" /> <?php _e('关注问题'); ?>
+									<input type="checkbox" checked="checked" value="1" name="auto_focus" /> <?php _e('关注帖子'); ?>
 								</label>
 								<?php } ?>
 								<label class="pull-right">
@@ -474,7 +467,7 @@
 							<div class="aw-mod aw-editor-box">
 								<div class="mod-head">
 									<div class="wmd-panel">
-							           <textarea class="wmd-input form-control autosize editor" id="wmd-input" rows="15" name="answer_content"><?php echo htmlspecialchars($this->draft_content['message']); ?></textarea>
+							           <textarea id="wmd-input" name="answer_content" style="width:693px;height:260px;"><?php echo htmlspecialchars($this->draft_content['message']); ?></textarea>
 							        </div>
 								</div>
 								<div class="mod-body clearfix">
@@ -486,16 +479,8 @@
 									<?php } ?>
 									<a href="javascript:;" onclick="AWS.ajax_post($('#answer_form'), AWS.ajax_processer, 'reply_question');" class="btn btn-normal btn-success pull-right btn-reply"><?php _e('回复'); ?></a>
 									<span class="pull-right text-color-999" id="answer_content_message">&nbsp;</span>
-									<?php if (get_setting('upload_enable') == 'Y') { ?>
-									<div class="aw-upload-box">
-										<a class="btn btn-default">上传附件</a>
-										<div class="upload-container"></div>
-										<span class="text-color-999 aw-upload-tips hidden-xs"><?php _e('允许'); ?> : <?php echo get_setting('allowed_upload_types'); ?></span>
-									</div>
-									<?php } ?>
 								</div>
 							</div>
-
 						</div>
 						</form>
 						<?php } ?>
@@ -528,27 +513,38 @@
 								</dd>
 							</dl>
 						</div>
+                        <div class="mod-body clearfix">
+                            <ul style="font-size: 12px;">
+                                <?php if(!empty($this->question_info['user_info']['realname'])): ?>
+                                <li> 真实姓名：<?php echo $this->question_info['user_info']['realname'];?></li>
+                                <?php endif;?>
+                                
+                                <?php if(!empty($this->question_info['user_info']['mobile'])): ?>
+                                <li> 所在部门：<?php echo $this->question_info['user_info']['company'];?></li>
+                                <?php endif;?>
+                            </ul>
+                        </div>
 					</div>
 					<?php } ?>
 					<!-- end 发起人 -->
 
-					<?php if ($this->user_id) { ?>
-					<!-- 邀请别人回复 -->
-					<div class="aw-mod email-invite-replay">
-						<div class="mod-head">
-							<h3><?php _e('邮件邀请别人回复'); ?></h3>
-						</div>
-						<div class="mod-body clearfix">
-							<!-- 侧边栏邀请box -->
-							<form method="post" action="question/ajax/email_invite/question_id-<?php echo $this->question_info['question_id']; ?>" onsubmit="return false;" id="email_invite_form">
-								<input class="form-control" type="text" name="email" placeholder="<?php _e('邮件邀请回复...'); ?>"/>
-								<a class="pull-right btn btn-mini btn-success" onclick="AWS.ajax_post($('#email_invite_form'));"><?php _e('邀请'); ?></a>
-							</form>
-							<!-- end 侧边栏邀请box -->
-						</div>
-					</div>
-					<!-- end 邀请别人回复 -->
-					<?php } ?>
+                    <!--&lt;!&ndash; 邀请别人回复 &ndash;&gt;-->
+					<!--<?php if ($this->user_id) { ?>-->
+					<!--<div class="aw-mod email-invite-replay">-->
+						<!--<div class="mod-head">-->
+							<!--<h3><?php _e('邮件邀请别人回复'); ?></h3>-->
+						<!--</div>-->
+						<!--<div class="mod-body clearfix">-->
+							<!--&lt;!&ndash; 侧边栏邀请box &ndash;&gt;-->
+							<!--<form method="post" action="question/ajax/email_invite/question_id-<?php echo $this->question_info['question_id']; ?>" onsubmit="return false;" id="email_invite_form">-->
+								<!--<input class="form-control" type="text" name="email" placeholder="<?php _e('邮件邀请回复...'); ?>"/>-->
+								<!--<a class="pull-right btn btn-mini btn-success" onclick="AWS.ajax_post($('#email_invite_form'));"><?php _e('邀请'); ?></a>-->
+							<!--</form>-->
+							<!--&lt;!&ndash; end 侧边栏邀请box &ndash;&gt;-->
+						<!--</div>-->
+					<!--</div>-->
+					<!--<?php } ?>-->
+                    <!--&lt;!&ndash; end 邀请别人回复 &ndash;&gt;-->
 
 					<?php if ($this->recommend_posts) { ?>
 					<!-- 推荐内容 -->
@@ -577,7 +573,7 @@
 					<!-- 相关问题 -->
 					<div class="aw-mod">
 						<div class="mod-head">
-							<h3><?php _e('相关问题'); ?></h3>
+							<h3><?php _e('相关帖子'); ?></h3>
 						</div>
 						<div class="mod-body font-size-12">
 							<ul>
@@ -593,7 +589,7 @@
 					<!-- 问题状态 -->
 					<div class="aw-mod question-status">
 						<div class="mod-head">
-							<h3><?php _e('问题状态'); ?></h3>
+							<h3><?php _e('帖子状态'); ?></h3>
 						</div>
 						<div class="mod-body">
 							<ul>
@@ -623,6 +619,13 @@
 	var USER_ANSWERED = '<?php echo $this->user_answered; ?>';
 	var UPLOAD_ENABLE = '<?php echo get_setting('upload_enable') ?>';
 	var ANSWER_TYPE = 'answer';
+</script>
+
+<script type="text/javascript">
+    $('#answer_quick').click(function(){
+        var h = $(document).height()-$(window).height();
+        $(document).scrollTop(h);
+    });
 </script>
 
 <script type="text/javascript" src="<?php echo G_STATIC_URL; ?>/js/app/question_detail.js"></script>

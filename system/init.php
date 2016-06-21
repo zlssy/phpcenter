@@ -11,6 +11,8 @@
 |
 +---------------------------------------------------------------------------
 */
+define('G_VERSION', '3.1.8');
+define('G_VERSION_BUILD', '20160603');
 
 define('IN_ANWSION', TRUE);
 define('ENVIRONMENT_PHP_VERSION', '5.2.2');
@@ -91,7 +93,6 @@ if (function_exists('get_magic_quotes_gpc'))
 	}
 }
 
-require_once(ROOT_PATH . 'version.php');
 require_once(AWS_PATH . 'functions.inc.php');
 
 array_walk_recursive($_GET, 'remove_invisible_characters');

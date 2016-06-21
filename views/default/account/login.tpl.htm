@@ -5,15 +5,16 @@
 		<div class="mod-body clearfix">
 			<div class="content pull-left">
 				<h1 class="logo"><a href=""></a></h1>
-				<h2><?php echo get_setting('site_name'); ?></h2>
+                <h2><?php echo get_setting('site_name'); ?></h2>
 				<form id="login_form" method="post" onsubmit="return false" action="account/ajax/login_process/">
 					<input type="hidden" name="return_url" value="<?php echo $this->return_url; ?>" />
 					<ul>
+						<li  class="parentCls">
+							<input  type="text" id="aw-login-user-name" class="form-control inputElem" placeholder="<?php _e('工作邮箱'); ?>" name="user_name" />
+                            <p style="font-size: 12px; margin: 0;padding-left: 5px;">只支持 *@tcl.com和 *@kuyumall.com的邮箱</p>
+                        </li>
 						<li>
-							<input type="text" id="aw-login-user-name" class="form-control" placeholder="<?php _e('邮箱'); ?> / <?php _e('用户名'); ?>" name="user_name" />
-						</li>
-						<li>
-							<input type="password" id="aw-login-user-password" class="form-control" placeholder="<?php _e('密码'); ?>" name="password" />
+							<input autocomplete="off"  type="password" id="aw-login-user-password" class="form-control" placeholder="<?php _e('密码'); ?>" name="password" />
 						</li>
 						<li class="alert alert-danger collapse error_message">
 							<i class="icon icon-delete"></i> <em></em>
@@ -24,17 +25,27 @@
 								<input type="checkbox" value="1" name="net_auto_login" />
 								<?php _e('记住我'); ?>
 							</label>
-							<a href="account/find_password/">&nbsp;&nbsp;<?php _e('忘记密码'); ?></a>
+							<a href="<?php echo get_js_url('/account/find_password/1', 1); ?>">&nbsp;&nbsp;<?php _e('忘记密码'); ?></a>
 						</li>
+                        <li id="verify_email" style="display: none">
+                            <a href="<?php echo get_js_url('/account/find_password/2', 1); ?>" class="pull-right btn btn-large btn-success">验证邮箱</a>
+                        </li>
+                        <li id="reset_pwd" style="display: none">
+                            <a href="<?php echo get_js_url('/account/find_password/3', 1); ?>" class="pull-right btn btn-large btn-success">初始化密码</a>
+                        </li>
 					</ul>
 				</form>
 			</div>
 			<div class="side-bar pull-left">
-				<?php if (get_setting('site_close') != 'Y' && (get_setting('sina_weibo_enabled') == 'Y' || get_setting('qq_login_enabled') == 'Y' || get_setting('google_login_enabled') == 'Y' || get_setting('facebook_login_enabled') == 'Y' || get_setting('twitter_login_enabled') == 'Y' || get_setting('weixin_app_id') && get_setting('weixin_app_secret') && get_setting('weixin_account_role') == 'service')) { ?>
+				<?php if (get_setting('site_close') != 'Y' && (AWS_APP::config()->get('system')->tcllogin['Open'] == 1 ||  get_setting('sina_weibo_enabled') == 'Y' || get_setting('qq_login_enabled') == 'Y' || get_setting('google_login_enabled') == 'Y' || get_setting('facebook_login_enabled') == 'Y' || get_setting('twitter_login_enabled') == 'Y' || get_setting('weixin_app_id') && get_setting('weixin_app_secret') && get_setting('weixin_account_role') == 'service')) { ?>
 
 					<?php if ($this->return_url) $return_url = 'return_url-' . base64_encode($this->return_url); ?>
 
-					<h3><?php _e('第三方账号登录'); ?></h3>
+					<h3><?php _e('联合登录'); ?></h3>
+                    <?php if(AWS_APP::config()->get('system')->tcllogin['Open'] == 1 ){ ?>
+                        <a href="<?php echo get_js_url('/account/newlogin/', 1).$return_url; ?>" class="btn btn-block btn-danger"><i class="icon"></i> TCL统一登录</a>
+                    <?php } ?>
+
 					<?php if (get_setting('sina_weibo_enabled') == 'Y') { ?>
 						<a href="account/openid/weibo/bind/<?php echo $return_url; ?>" class="btn btn-block btn-weibo"><i class="icon icon-weibo"></i> 微博登录</a>
 					<?php } ?>
@@ -66,12 +77,7 @@
 				<?php } ?>
 			</div>
 		</div>
-		<div class="mod-footer">
-			<span>还没有账号?</span>&nbsp;&nbsp;
-			<a href="account/register/"><?php _e('立即注册'); ?></a>&nbsp;&nbsp;•&nbsp;&nbsp;
-			<a href="">游客访问</a>&nbsp;&nbsp;•&nbsp;&nbsp;
-			<a href="reader/"><?php _e('问答阅读'); ?></a>
-		</div>
+		<div class="mod-footer" style="display: none"></div>
 	</div>
 </div>
 

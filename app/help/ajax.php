@@ -61,7 +61,7 @@ class ajax extends AWS_CONTROLLER
 
                 if (!$question_info)
                 {
-                    H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('指定问题不存在')));
+                    H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('指定帖子不存在')));
                 }
 
                 $this->model('help')->add_data($chapter_info['id'], 'question', $question_info['question_id']);
@@ -103,12 +103,12 @@ class ajax extends AWS_CONTROLLER
 
                 if (!$question_info)
                 {
-                    H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('指定问题不存在')));
+                    H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('指定帖子不存在')));
                 }
 
                 if (!$question_info['chapter_id'])
                 {
-                    H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('指定问题不在帮助中心中')));
+                    H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('指定帖子不在帮助中心中')));
                 }
 
                 $this->model('help')->remove_data('question', $question_info['question_id']);

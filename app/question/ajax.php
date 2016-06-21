@@ -56,7 +56,7 @@ class ajax extends AWS_CONTROLLER
 	{
 		if (!$_POST['question_id'])
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题不存在')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子不存在')));
 		}
 
 		$this->model('question')->add_question_uninterested($this->user_id, $_POST['question_id']);
@@ -99,7 +99,7 @@ class ajax extends AWS_CONTROLLER
 	{
 		if (!$question_info = $this->model('question')->get_question_info_by_id($_POST['question_id']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题不存在或已被删除')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子不存在或已被删除')));
 		}
 
 		if (!$invite_user_info = $this->model('account')->get_user_info_by_uid($_POST['uid']))
@@ -109,7 +109,7 @@ class ajax extends AWS_CONTROLLER
 
 		if ($invite_user_info['uid'] == $this->user_id)
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('不能邀请自己回复问题')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('不能邀请自己回复帖子')));
 		}
 
 		if ($this->user_info['integral'] < 0 and get_setting('integral_system_enabled') == 'Y')
@@ -119,12 +119,12 @@ class ajax extends AWS_CONTROLLER
 
 		if ($this->model('answer')->has_answer_by_uid($_POST['question_id'], $invite_user_info['uid']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('该用户已经回答过该问题')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('该用户已经回答过该帖子')));
 		}
 
 		if ($question_info['published_uid'] == $invite_user_info['uid'])
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('不能邀请问题的发起者回答问题')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('不能邀请帖子的发起者回复帖子')));
 		}
 
 		if ($this->model('question')->has_question_invite($_POST['question_id'], $invite_user_info['uid']))
@@ -143,7 +143,7 @@ class ajax extends AWS_CONTROLLER
 
 		if ($weixin_user = $this->model('openid_weixin_weixin')->get_user_info_by_uid($invite_user_info['uid']) AND $invite_user_info['weixin_settings']['QUESTION_INVITE'] != 'N')
 		{
-			$this->model('weixin')->send_text_message($weixin_user['openid'], "有会员在问题 [" . $question_info['question_content'] . "] 邀请了你进行回答", $this->model('openid_weixin_weixin')->redirect_url('/m/question/' . $question_info['question_id']));
+			$this->model('weixin')->send_text_message($weixin_user['openid'], "有会员在帖子 [" . $question_info['question_content'] . "] 邀请了你进行回答", $this->model('openid_weixin_weixin')->redirect_url('/m/question/' . $question_info['question_id']));
 		}
 
 		$notification_id = $this->model('notify')->send($this->user_id, $invite_user_info['uid'], notify_class::TYPE_INVITE_QUESTION, notify_class::CATEGORY_QUESTION, intval($_POST['question_id']), array(
@@ -188,7 +188,7 @@ class ajax extends AWS_CONTROLLER
 
 				$url = get_js_url('/question/' . $question_info['question_id'] . '?fromuid=' . $this->user_id);
 
-				$message = AWS_APP::lang()->_t('我看到一个不错的问题, 想和你分享:') . ' ' . $question_info['question_content'] . ' ' . $url;
+				$message = AWS_APP::lang()->_t('我看到一个不错的帖子, 想和你分享:') . ' ' . $question_info['question_content'] . ' ' . $url;
 			break;
 
 			case 'answer':
@@ -213,7 +213,7 @@ class ajax extends AWS_CONTROLLER
 					$user_info['user_name'] = AWS_APP::lang()->_t('匿名用户');
 				}
 
-				$message = AWS_APP::lang()->_t('我看到一个不错的问题, 想和你分享:') . ' ' . $question_info['question_content'] . ' - ' . $user_info['user_name'] . ": " . $answer_info['answer_content'] . ' ' . $url;
+				$message = AWS_APP::lang()->_t('我看到一个不错的帖子, 想和你分享:') . ' ' . $question_info['question_content'] . ' - ' . $user_info['user_name'] . ": " . $answer_info['answer_content'] . ' ' . $url;
 			break;
 
 			case 'article':
@@ -272,7 +272,7 @@ class ajax extends AWS_CONTROLLER
 
 		if ($question_info['lock'] AND ! ($this->user_info['permission']['is_administortar'] or $this->user_info['permission']['is_moderator']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('不能评论锁定的问题')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('不能评论锁定的帖子')));
 		}
 
 		if (! $this->user_info['permission']['publish_url'] AND FORMAT::outside_url_exists($_POST['message']))
@@ -321,7 +321,7 @@ class ajax extends AWS_CONTROLLER
 	{
 		if (! $_GET['question_id'])
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('问题不存在')));
+			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('帖子不存在')));
 		}
 
 		if (!$this->user_info['permission']['publish_comment'])
@@ -338,7 +338,7 @@ class ajax extends AWS_CONTROLLER
 
 		if ($question_info['lock'] AND ! ($this->user_info['permission']['is_administortar'] or $this->user_info['permission']['is_moderator']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('不能评论锁定的问题')));
+			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('不能评论锁定的帖子')));
 		}
 
 		if (get_setting('comment_limit') > 0 AND (cjk_strlen($_POST['message']) > get_setting('comment_limit')))
@@ -427,12 +427,12 @@ class ajax extends AWS_CONTROLLER
 
 		if (!$question_info = $this->model('question')->get_question_info_by_id($_POST['question_id']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题不存在')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子不存在')));
 		}
 
 		if ($question_info['published_uid'] == $this->user_id)
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('不能感谢自己的问题')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('不能感谢自己的帖子')));
 		}
 
 		if ($this->model('question')->question_thanks($_POST['question_id'], $this->user_id, $this->user_info['user_name']))
@@ -500,12 +500,12 @@ class ajax extends AWS_CONTROLLER
 	{
 		if (!$_POST['question_id'])
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题不存在')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子不存在')));
 		}
 
 		if (! $this->model('question')->get_question_info_by_id($_POST['question_id']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题不存在')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子不存在')));
 		}
 
 		H::ajax_json_output(AWS_APP::RSM(array(
@@ -522,12 +522,12 @@ class ajax extends AWS_CONTROLLER
 
 		if (!$question_info = $this->model('question')->get_question_info_by_id($_POST['question_id']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题不存在')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子不存在')));
 		}
 
 		if ($question_info['lock'] AND ! ($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('已经锁定的问题不能回复')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('已经锁定的帖子不能回复')));
 		}
 
 		$answer_content = trim($_POST['answer_content'], "\r\n\t");
@@ -540,13 +540,13 @@ class ajax extends AWS_CONTROLLER
 		// 判断是否是问题发起者
 		if (get_setting('answer_self_question') == 'N' and $question_info['published_uid'] == $this->user_id)
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('不能回复自己发布的问题，你可以修改问题内容')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('不能回复自己发布的帖子，你可以修改帖子内容')));
 		}
 
 		// 判断是否已回复过问题
 		if ((get_setting('answer_unique') == 'Y') AND $this->model('answer')->has_answer_by_uid($question_info['question_id'], $this->user_id))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('一个问题只能回复一次，你可以编辑回复过的回复')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('一个帖子只能回复一次，你可以编辑回复过的回复')));
 		}
 
 		if (strlen($answer_content) < get_setting('answer_length_lower'))
@@ -712,7 +712,7 @@ class ajax extends AWS_CONTROLLER
 	{
 		if (! $question_info = $this->model('question')->get_question_info_by_id($_GET['id']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('指定问题不存在')));
+			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('指定帖子不存在')));
 		}
 
 		$log_list = ACTION_LOG::get_action_by_event_id($_GET['id'], (intval($_GET['page']) * get_setting('contents_per_page')) . ', ' . get_setting('contents_per_page'), ACTION_LOG::CATEGORY_QUESTION, implode(',', array(
@@ -756,7 +756,7 @@ class ajax extends AWS_CONTROLLER
 
 		if ($question_info['lock'] AND ! ($this->user_info['permission']['is_administortar'] or $this->user_info['permission']['is_moderator']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('锁定的问题不能设置重定向')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('锁定的帖子不能设置重定向')));
 		}
 
 		if (!$this->user_info['permission']['redirect_question'] AND ! ($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator']))
@@ -817,7 +817,7 @@ class ajax extends AWS_CONTROLLER
 	{
 		if (!$this->user_info['permission']['is_administortar'] AND !$this->user_info['permission']['is_moderator'])
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('对不起, 你没有删除问题的权限')));
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('对不起, 你没有删除帖子的权限')));
 		}
 
 		if ($question_info = $this->model('question')->get_question_info_by_id($_POST['question_id']))
@@ -944,7 +944,7 @@ class ajax extends AWS_CONTROLLER
 
 		if (! $question_info = $this->model('question')->get_question_info_by_id($_POST['question_id']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, - 1, AWS_APP::lang()->_t('问题不存在')));
+			H::ajax_json_output(AWS_APP::RSM(null, - 1, AWS_APP::lang()->_t('帖子不存在')));
 		}
 
 		$this->model('question')->lock_question($_POST['question_id'], !$question_info['lock']);
@@ -1002,12 +1002,12 @@ class ajax extends AWS_CONTROLLER
 
 		if (! $question_info = $this->model('question')->get_question_info_by_id($answer_info['question_id']))
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, - 1, AWS_APP::lang()->_t('问题不存在')));
+			H::ajax_json_output(AWS_APP::RSM(null, - 1, AWS_APP::lang()->_t('帖子不存在')));
 		}
 
 		if ($question_info['best_answer'])
 		{
-			H::ajax_json_output(AWS_APP::RSM(null, - 1, AWS_APP::lang()->_t('问题已经存在最佳回复')));
+			H::ajax_json_output(AWS_APP::RSM(null, - 1, AWS_APP::lang()->_t('帖子已经存在最佳回复')));
 		}
 
 		$this->model('answer')->set_best_answer($_POST['answer_id']);

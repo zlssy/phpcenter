@@ -18,7 +18,7 @@
 <!-- 内容 -->
 <div class="container">
 	<div class="tab-content">
-		<!-- 我关注的话题 -->
+		<!-- 我关注的标签 -->
 		<?php if ($this->user_id) { ?>
 		<div class="tab-pane active" id="my_topic">
 			<div class="aw-feed-list aw-topic-list active">
@@ -31,8 +31,8 @@
 			</div>
 		</div>
 		<?php } ?>
-		<!-- end 我关注的话题 -->
-		<!-- 热门话题 -->
+		<!-- end 我关注的标签 -->
+		<!-- 热门标签 -->
 		<div class="tab-pane <?php if (!$this->user_id) { ?>active<?php } ?>" id="hot_topic">
 			<div class="aw-feed-list aw-topic-list active">
 				<div class="mod-body">
@@ -43,7 +43,7 @@
 				</div>
 			</div>
 		</div>
-		<!-- 热门话题 -->
+		<!-- 热门标签 -->
 	</div>
 </div>
 <!-- end 内容 -->

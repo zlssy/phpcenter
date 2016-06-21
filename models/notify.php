@@ -22,7 +22,7 @@ class notify_class extends AWS_MODEL
 {
 	//=========模型类别:model_type===================================================
 
-	const CATEGORY_QUESTION	= 1;	// 问题
+	const CATEGORY_QUESTION	= 1;	// 帖子
 	const CATEGORY_PEOPLE	= 4;	// 人物
 	const CATEGORY_CONTEXT	= 7;	// 文字
 
@@ -33,18 +33,18 @@ class notify_class extends AWS_MODEL
 	//=========操作标示:action_type==================================================
 
 	const TYPE_PEOPLE_FOCUS	= 101;	// 被人关注
-	const TYPE_NEW_ANSWER	= 102;	// 关注的问题增加了新回复
+	const TYPE_NEW_ANSWER	= 102;	// 关注的帖子增加了新回复
 	const TYPE_COMMENT_AT_ME	= 103;	// 有评论@提到我
-	const TYPE_INVITE_QUESTION	= 104;	// 被人邀请问题问题
+	const TYPE_INVITE_QUESTION	= 104;	// 被人邀请帖子帖子
 	const TYPE_ANSWER_COMMENT	= 105;	// 我的回复被评论
-	const TYPE_QUESTION_COMMENT	= 106;	// 我的问题被评论
+	const TYPE_QUESTION_COMMENT	= 106;	// 我的帖子被评论
 	const TYPE_ANSWER_AGREE	= 107;	// 我的回复收到赞同
 	const TYPE_ANSWER_THANK	= 108;	// 我的回复收到感谢
-	const TYPE_MOD_QUESTION	= 110;	// 我发布的问题被编辑
+	const TYPE_MOD_QUESTION	= 110;	// 我发布的帖子被编辑
 	const TYPE_REMOVE_ANSWER	= 111;	// 我发表的回复被删除
 
-	const TYPE_REDIRECT_QUESTION	= 113;	// 我发布的问题被重定向
-	const TYPE_QUESTION_THANK	= 114;	// 我发布的问题收到感谢
+	const TYPE_REDIRECT_QUESTION	= 113;	// 我发布的帖子被重定向
+	const TYPE_QUESTION_THANK	= 114;	// 我发布的帖子收到感谢
 	const TYPE_CONTEXT	= 100;	// 纯文本通知
 
 	const TYPE_ANSWER_AT_ME	= 115;	// 有回答 @ 提到我
@@ -55,8 +55,8 @@ class notify_class extends AWS_MODEL
 
 	const TYPE_ARTICLE_APPROVED = 131; // 文章通过审核
 	const TYPE_ARTICLE_REFUSED = 132; // 文章未通过审核
-	const TYPE_QUESTION_APPROVED = 133; // 问题通过审核
-	const TYPE_QUESTION_REFUSED = 134; // 问题未通过审核
+	const TYPE_QUESTION_APPROVED = 133; // 帖子通过审核
+	const TYPE_QUESTION_REFUSED = 134; // 帖子未通过审核
 
 	const TYPE_TICKET_REPLIED = 141; // 工单被回复
 	const TYPE_TICKET_CLOSED = 142; // 工单被关闭
@@ -843,7 +843,7 @@ class notify_class extends AWS_MODEL
 				switch ($val['model_type'])
 				{
 					case self::CATEGORY_QUESTION:
-						$data[$key]['message'] = $val['extend_count'] . ' ' . AWS_APP::lang()->_t('项关于问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
+						$data[$key]['message'] = $val['extend_count'] . ' ' . AWS_APP::lang()->_t('项关于帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
 
 						break;
 
@@ -875,7 +875,7 @@ class notify_class extends AWS_MODEL
 							break;
 
 						case self::TYPE_COMMENT_AT_ME:
-							$data[$key]['extend_message'][] = AWS_APP::lang()->_t('他们在问题中的评论提到了你') . ': ' . $users_list;
+							$data[$key]['extend_message'][] = AWS_APP::lang()->_t('他们在帖子中的评论提到了你') . ': ' . $users_list;
 
 							break;
 
@@ -915,12 +915,12 @@ class notify_class extends AWS_MODEL
 							break;
 
 						case self::TYPE_MOD_QUESTION:
-							$data[$key]['extend_message'][] = AWS_APP::lang()->_t('%s 次编辑问题, 按编辑者查看', $extend['count']) . ': ' . $users_list;
+							$data[$key]['extend_message'][] = AWS_APP::lang()->_t('%s 次编辑帖子, 按编辑者查看', $extend['count']) . ': ' . $users_list;
 
 							break;
 
 						case self::TYPE_REDIRECT_QUESTION:
-							$data[$key]['extend_message'][] = $users_list . ' ' . AWS_APP::lang()->_t('重定向了你发布的问题');
+							$data[$key]['extend_message'][] = $users_list . ' ' . AWS_APP::lang()->_t('重定向了你发布的帖子');
 
 							break;
 
@@ -930,7 +930,7 @@ class notify_class extends AWS_MODEL
 							break;
 
 						case self::TYPE_INVITE_QUESTION:
-							$data[$key]['extend_message'][] = $users_list . ' ' . AWS_APP::lang()->_t('邀请你参与问题');
+							$data[$key]['extend_message'][] = $users_list . ' ' . AWS_APP::lang()->_t('邀请你参与帖子');
 
 							break;
 					}
@@ -955,7 +955,7 @@ class notify_class extends AWS_MODEL
 							$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a>';
 						}
 
-						$data[$key]['message'] .= ' ' . AWS_APP::lang()->_t('回复了问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
+						$data[$key]['message'] .= ' ' . AWS_APP::lang()->_t('回复了帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
 
 						break;
 
@@ -965,7 +965,7 @@ class notify_class extends AWS_MODEL
 						break;
 
 					case self::TYPE_COMMENT_AT_ME:
-						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('在问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的评论提到了你');
+						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('在帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的评论提到了你');
 
 						break;
 
@@ -984,7 +984,7 @@ class notify_class extends AWS_MODEL
 							$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a>';
 						}
 
-						$data[$key]['message'] .= ' ' . AWS_APP::lang()->_t('在问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的回答提到了你');
+						$data[$key]['message'] .= ' ' . AWS_APP::lang()->_t('在帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的回答提到了你');
 
 						break;
 
@@ -998,51 +998,51 @@ class notify_class extends AWS_MODEL
 							$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a>';
 						}
 
-						$data[$key]['message'] .= ' ' . AWS_APP::lang()->_t('在问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('回答评论中提到了你');
+						$data[$key]['message'] .= ' ' . AWS_APP::lang()->_t('在帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('回答评论中提到了你');
 					break;
 
 					case self::TYPE_INVITE_QUESTION:
-						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('邀请你参与问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
+						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('邀请你参与帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
 
 						break;
 
 					case self::TYPE_ANSWER_COMMENT:
-						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('评论了你在问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的回复');
+						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('评论了你在帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的回复');
 
 						break;
 
 					case self::TYPE_QUESTION_COMMENT:
-						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('评论了你发起的问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
+						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('评论了你发起的帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
 
 						break;
 
 					case self::TYPE_ANSWER_AGREE:
-						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('赞同了你在问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的回复');
+						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('赞同了你在帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的回复');
 
 						break;
 
 					case self::TYPE_ANSWER_THANK:
-						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('感谢了你在问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的回复');
+						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('感谢了你在帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的回复');
 
 						break;
 
 					case self::TYPE_MOD_QUESTION:
-						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('编辑了你发布的问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
+						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('编辑了你发布的帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
 
 						break;
 
 					case self::TYPE_REMOVE_ANSWER:
-						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('删除了你在问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的回复');
+						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('删除了你在帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a> ' . AWS_APP::lang()->_t('中的回复');
 
 						break;
 
 					case self::TYPE_REDIRECT_QUESTION:
-						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('重定向了你发起的问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
+						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('重定向了你发起的帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
 
 						break;
 
 					case self::TYPE_QUESTION_THANK:
-						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('感谢了你发起的问题') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
+						$data[$key]['message'] = '<a href="' . $val['p_url'] . '">' . $val['p_user_name'] . '</a> ' . AWS_APP::lang()->_t('感谢了你发起的帖子') . ' <a href="' . $val['key_url'] . '">' . $val['title'] . '</a>';
 
 						break;
 
@@ -1062,12 +1062,12 @@ class notify_class extends AWS_MODEL
 						break;
 
 					case self::TYPE_QUESTION_APPROVED:
-						$data[$key]['message'] = AWS_APP::lang()->_t('你发起的问题 %s 审核通过', '<a href="' . $val['key_url'] . '">' . $val['title'] . '</a>');
+						$data[$key]['message'] = AWS_APP::lang()->_t('你发起的帖子 %s 审核通过', '<a href="' . $val['key_url'] . '">' . $val['title'] . '</a>');
 
 						break;
 
 					case self::TYPE_QUESTION_REFUSED:
-						$data[$key]['message'] = AWS_APP::lang()->_t('你发起的问题 %s 审核未通过', $val['title']);
+						$data[$key]['message'] = AWS_APP::lang()->_t('你发起的帖子 %s 审核未通过', $val['title']);
 
 						break;
 

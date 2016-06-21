@@ -1,0 +1,149 @@
+<?php TPL::output('global/header_meta.tpl.htm'); ?>
+<body>
+<div id="unlogin" style="display:none"><div class="modal fade alert-box aw-tips-box in" aria-hidden="false" style="display: block;"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h3 class="modal-title" id="myModalLabel">提示信息</h3></div><div class="modal-body"><p>要回答问卷请先 <a class="btn btn-primary btn-xs" href="account/login/url-<?php echo base64_encode(base_url().$_SERVER['REQUEST_URI'])?>">登录</a></p></div></div></div></div>
+<div class="modal-backdrop fade in"></div></div>
+<div class="aw-container-wrap">
+    <div class="container mod-questionnaire" style="display: block;">
+        <div class="row">
+            <div class="aw-content-wrap clearfix">
+                <div id="q_navs" class="hide" style="border-bottom:1px solid #DDD; padding-bottom:20px;">
+                <div class="aw-topic-bar clearfix">
+                    <a href="q/my/" class="btn btn-normal btn-default">我的问卷</a>
+                    <a href="q/add/" id="addQuestion" class="btn btn-normal btn-success pull-right">创建新问卷</a>
+                </div>
+                </div>
+                <div class="paper">
+                    <div class="hd" id="q_title">
+                        <h2></h2>
+                        <div id="q_desc"></div>
+                    </div>
+                    <div class="question-list">
+                    </div>
+                    <div class="text-center clearfix" id="submitcomm" style="display:none;">
+                        <div class="col-xs-12 col-sm-2 col-sm-offset-5"><button id="submit_btn" type="button" class="btn btn-primary btn-lg col-xs-12">提交</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script id="qTemplate" type="text/template">
+    <%
+    var T = ["radio","checkbox"]
+    var checkstypes = {radio:T[0],checkboxes:T[1],singleMatrix:T[0],mutiMatrix:T[1],singlePic:T[0],mutiPic:T[1]}
+    var hr = 0;
+    _.each(obj.items,function(_q,i,q_arr){
+        if(_q.field_type == "section_break"){
+            hr++; 
+            return;
+        }
+        var cktype = checkstypes[_q.field_type];
+    %>
+    <div class="question-item" data-id="<%-_q.cid%>" data-type="<%-_q.field_type%>" data-required="<%-_q.required?1:0%>" data-boption="<%= _q.field_options.include_blank_option?1:0%>" <%=_q.field_options.min?' data-min="'+_q.field_options.min+'"':''%><%=_q.field_options.max?' data-max="'+_q.field_options.max+'"':''%><%=_q.field_options.minlength?' data-minlength="'+_q.field_options.minlength+'"':''%><%=_q.field_options.maxlength?' data-maxlength="'+_q.field_options.maxlength+'"':''%>>
+        <div class="question_title"><h3><%- (i+1-hr) + '. '+_q.label%></h3><%=_q.required?"<em>*</em>":""%><span> <%- showtypes[_q.field_type]? '['+showtypes[_q.field_type]+']':''%></span></div>
+        <div class="question_exp"><%-_q.field_options.description%></div>
+        <div class="answer-list">
+            <%if(_q.field_type == "radio" || _q.field_type == "checkboxes"){%>            
+            <ul>
+                <%
+                _.each(_q.field_options.options,function(item,n,arr){
+                    var qid = "q_"+_q.cid+"_"+n;
+                %>
+                <li>
+                    <label class="answer" for="<%-qid%>"><input id="<%-qid%>" name="<%-_q.cid%>" value="<%-item.label%>" type="<%=cktype%>" <%=item.checked?"checked":""%>>
+                    <%-item.label%></label>
+                </li>
+                <%})%>
+                <%if(_q.field_options.include_other_option){%>
+                <li>
+                    <input id="<%-"q_"+_q.cid+"_o"%>" name="<%-_q.cid%>" value="-1" data-other="1" type="<%=cktype%>">
+                    <input name="question<%-_q.cid%>" type="text" class="text-box other-answer-input" placeholder="其他">
+                </li>
+                <%}%>
+            </ul>
+            <%}
+            if(_q.field_type == "dropdown"){%>
+            <select name="<%-_q.cid%>">
+                <%if(_q.field_options.include_blank_option){%><option data-boption="1" value="">= 请选择 =</option><%}%>
+                <%
+                _.each(_q.field_options.options,function(item,n,arr){
+                    var qid = "q_"+_q.cid+"_"+n;
+                %>
+                <option value="<%-item.label%>" <%=item.checked?"selected":""%>><%-item.label%></option>
+                <%})%>
+            </select>
+            <%}
+            if(_q.field_type == "text"){%>
+            <input type="text" class="q_text text-box other-answer-input" name="<%-_q.cid%>" <%- _q.maxlength ? " maxlength="+_q.field_options.maxlength :""%> />
+            <%}
+            if(_q.field_type == "mutitext"){%>
+            <textarea class="text-area" rows="5" name="<%-_q.cid%>"<%- _q.maxlength ? " maxlength="+_q.field_options.maxlength :""%>></textarea>
+            <%}
+            if(_q.field_type == "singleMatrix" || _q.field_type == "mutiMatrix"){
+            var cols = _q.field_options.cols,
+                rows = _q.field_options.rows;
+            %>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td></td>
+                        <%_.each(cols,function(item,n,arr){%>
+                        <td><%-item.label%></td>
+                        <%})%>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <%
+                    _.each(rows,function(item,n,arr){
+                        var input_name = _q.cid + "_" + n;
+                    %>
+                    <tr class="question_tr" data-label="<%-item.label%>">
+                        <td><%-item.label%></td>
+                        <%
+                        for(var i=0; i<cols.length;i++){
+                            var qid = "q_"+_q.cid+"_"+n+"_"+i;
+                        %>
+                        <td><input id="<%-qid%>" name="<%-_q.cid+"_"+n%>" value="<%-cols[i].label || cols[i]%>" type="<%=cktype%>"><label for="<%-qid%>"></label></td>
+                        <%}%>
+                    <tr>
+                    <%})%>
+                    </tboey>
+                </table>
+            <%}
+            if(_q.field_type == "singlePic" || _q.field_type == "mutiPic"){
+                cktype = checkstypes[_q.field_type];
+                var liclass = _q.field_options.options.length <= 3 ? "col-md-3" : "col-md-3";
+            %>
+                <ul class="question_imglist row">
+                <%
+                _.each(_q.field_options.options,function(item,n,arr){
+                    var qid = "q_"+_q.cid+"_"+n;
+                    
+                %>
+                <li class="<%=liclass%> col-sm-4 col-xs-6">
+                    <div class="imgitem">
+                    <a <%='href="'+item.uri+'"'%> target="_blank" rel="<%-_q.cid%>" title="<%-item.label%>"><img src="<%=item.thumb || item.uri%>" alt="<%-item.label%>"></a>
+                    <label class="answer" for="<%-qid%>" title="<%-item.label%>"><input id="<%-qid%>" name="<%-_q.cid%>" value="<%-item.label%>" type="<%=cktype%>" <%=item.checked?"checked":""%>> <span><%-item.label%></span></label>
+                    </div>
+                </li>
+                <%})%>
+                </ul>
+            <%}
+            if(_q.field_type == "range"){%>
+            <!-- <div class="sliders" data-max="" data-min=""></div> //☆☆★★ --> 
+            <div class="question_range">
+                <%for(var i=0; i<_q.field_options.num; i++){%>
+                <span>★</span>
+                <%}%>
+            </div>
+            <%}%>
+        </div>
+        <div class="errmsg"></div>
+    </div>
+    <%})%>
+</script>
+<script type="text/javascript">
+var QID = "<?php echo $_GET['id']?>";
+var LOGIN_URL = "account/login/url-<?php echo base64_encode(base_url().$_SERVER['REQUEST_URI'])?>";
+</script>
+<?php TPL::output('global/footer.tpl.htm'); ?>

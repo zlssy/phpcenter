@@ -21,7 +21,7 @@ switch ($_GET['post_type'])
 				$this->model('posts')->set_posts_index($val['question_id'], 'question', $val);
 			}
 
-			H::redirect_msg(AWS_APP::lang()->_t('正在升级问题数据库') . ', ' . AWS_APP::lang()->_t('批次: %s', $_GET['page']), '/upgrade/script/post_type-question__page-' . ($_GET['page'] + 1));
+			H::redirect_msg(AWS_APP::lang()->_t('正在升级帖子数据库') . ', ' . AWS_APP::lang()->_t('批次: %s', $_GET['page']), '/upgrade/script/post_type-question__page-' . ($_GET['page'] + 1));
 			die;
 		}
 		else

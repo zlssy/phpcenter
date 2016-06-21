@@ -7,3 +7,4 @@
 *.DS_Store
 
 system/config/database.php
+system/config/system.php

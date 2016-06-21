@@ -7,6 +7,8 @@
 			<div class="mod-head">
 				<h3><?php _e('修改密码'); ?></h3>
 			</div>
+
+            <?php if( $this->user_info['change_pwd_flag'] < 2 ){ ?><div>通过TCL统一登录的初始密码为：123456</div><?php } ?>
 			<form class="form-horizontal" action="account/ajax/modify_password/" method="post" id="setting_form">
 				<div class="mod-body">
 					<div class="form-group">

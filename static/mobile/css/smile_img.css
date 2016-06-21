@@ -1,0 +1,165 @@
+/*新加手机端样式文件 新增表情和图片样式 add by yee 2016/5/23 */
+.extra_btn_wrap {
+	float:left;
+}
+.extra_btn_wrap a {
+	display:inline-block;
+	width:35px;
+	height:35px;
+	margin-left:5px;
+	vertical-align:middle;
+	background-image:url("../img/media_bar_btns.png");
+	background-repeat:no-repeat;
+	text-indent:-9999px;
+	background-size:70px auto;
+}
+.extra_btn_wrap .smile_wrap {
+	background-position:0 -35px;
+}
+.extra_btn_wrap .smile_wrap.active {
+	background-position:-36px -35px;
+}
+.extra_btn_wrap .upload_img_wrap {
+	background-position:0 -70px;
+}
+.extra_btn_wrap .upload_img_wrap.active {
+	background-position:-36px -70px;
+}
+.smile_box_panel {
+	width:100%;
+	margin:0;
+	z-index:20000;
+	position:fixed;
+	bottom:0;
+	background:#fff;
+	display:none;
+}
+.smile_box_panel .smile_container {
+	width:100%;
+	overflow:hidden;
+	white-space:nowrap;
+}
+.smile_box_panel .smile_list {
+	padding:0;
+	width:100%;
+	position:relative;
+	line-height:0;
+}
+.smile_box_panel .smile_list li {
+	display:inline-block;
+	white-space:normal;
+	margin:0;
+	line-height:0;
+	width:100%;
+}
+.smile_box_panel .smile_list div {
+	width:101%;
+}
+.smile_box_panel .smile_list a {
+	width: 14.28%;
+	height: 42px;
+	display: block;
+	float: left;
+	white-space: nowrap;
+	-webkit-box-sizing: border-box;
+	font-size: 14px;
+	font-family: Microsoft YaHei;
+	color: #333;
+	text-align: center;
+	line-height: 58px;
+}
+.smile_popo {
+	height:30px;
+	background:url(../img/popo_2adefed.png) no-repeat 50% 0;
+}
+.smile_box_panel .smile_list span {
+	width:30px;
+	display:inline-block;
+}
+.smile_slide_aim {
+	text-align:center;
+	height:15%;
+}
+.smile_slide_aim a {
+	display: inline-block;
+	width: 9px;
+	height: 9px;
+	border-radius: 5px;
+	margin: 5px 5px 5px 0;
+	border: 1px solid #b8c0cc;
+}
+.smile_slide_aim .active {
+	background: #3385ff;
+	border-color: #3385ff;
+}
+.smile_btn_group {
+	width:100%;
+	overflow:hidden;
+	background: #ebeff5;
+	border-top: 1px solid #bbc2ce;
+}
+.smile_btn_group a {
+	display: inline-block;
+	text-align: center;
+	height: 35px;
+	line-height: 35px;
+	font-family: arial;
+	font-size: 16px;
+	border-left: 1px solid #bbc2ce;
+	border-right: 0;
+	border-bottom: 0;
+	text-decoration: none;
+	color: #3e5872;
+	float:left;
+}
+.smile_btn_group .smile_btn_pic {
+	border:0;
+	width:40%;
+	background:#fff;
+	float:left;
+}
+.smile_btn_group .smile_active {
+	border: 0;
+	color: #3e5872;
+}
+.smile_btn_group .smile_btn_font {
+	width:40%;
+}
+.smile_btn_group .smile_btn_del {
+	background:#c2c9d1;
+	width:54px;
+	position:relative;
+	float:right;
+}
+.smile_icon {
+	display: inline-block;
+	width: 35px;
+	height: 30px;
+	margin-top: 3px;
+	background: url(../img/popo_2adefed.png) no-repeat 50% 0;
+	background-size:30px auto;
+}
+.smile_tusiji {
+	height:35px;
+	background:url(../img/tusiji_a9b1a17.png) no-repeat 50% 0;
+}
+.smile_ali {
+	height:35px;
+	background:url(../img/ali_5272ad2.gif) no-repeat 50% 0;
+}
+.smile_tb10 {
+	height:35px;
+	background:url(../img/tb10_fd8fe30.png) no-repeat 50% 0;
+}
+
+.smile_btn_close {
+	display: inline-block;
+	width: 28px;
+	height: 22px;
+	background: #fff;
+	top: 7px;
+	position: absolute;
+	right: 13px;
+	background: url(../img/smile_close_btn_6a0f783.png) no-repeat 0 0;
+	background-size: 100%;
+}

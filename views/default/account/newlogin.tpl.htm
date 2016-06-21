@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>跳转中...</title>
+    <style>*{margin: 0; padding: 0; font-size:14px;}</style>
+</head>
+<body>
+
+<form style="display:none;" id="gologin" method="POST" action="<?php echo $this->ServiceLoginURL; ?>">
+    <input type="hidden" name="SAMLRequest" value="<?php echo $this->SAMLRequest; ?>" >
+    <input type="hidden" name="RelayState" value="<?php echo $this->RelayState; ?>">
+</form>
+
+<div id="is_weixin" style="display:none;">
+    <div style="position: fixed; width: 100%; height:100%; background-color:rgba(0,0,0,0.3);color:#FFF;">
+        <img src="static/common/live_weixin.png" style="display: block; width:94%; margin:8px auto 0 auto;">
+        <p style="text-align: center;">暂不支持微信，请用自带浏览器打开!</p>
+    </div>
+</div>
+<div id="is_qq" style="display:none; text-align: center;">
+
+    <p style="padding:120px 10px 20px 10px; font-size:1.3em; line-height:1.7;">如需浏览,请长按链接复制后使用浏览器访问</p>
+    <p id="current_url" style="font-size: 1.2em;" ><?php echo $_GET['from']; ?> </p>
+
+</div>
+<div id="msg" style="text-align: center;display: none;margin-top: 20px;">正在连接登录系统...　　　如果长时间无反应,请<a href="javascript:;" onclick="tologin();">点此登陆</a></div>
+<div id="test"></div>
+
+<script>
+    var ua = window.navigator.userAgent.toLowerCase();
+    function isWei_A(){ //判定移动端版微信
+        return (!!~ua.indexOf('android') || !!~ua.indexOf('iphone')) &&  ~ua.indexOf('micromessenger');
+    }
+    function isAppQQ(){
+        return !!~ua.indexOf(" qq/");
+    }
+    function tologin(){document.getElementById("gologin").submit();}
+    if(isWei_A()){
+        document.getElementById("is_weixin").style.display='block';
+        document.title = "TCL CE社区";
+         }else if(isAppQQ()){
+         document.getElementById("is_qq").style.display='block';
+         document.title = "TCL CE社区";
+    }else{
+        tologin();
+        setTimeout(function(){document.getElementById("msg").style.display="block";},1000);
+    }
+</script>
+<!--
+</body>
+</html>
+
+

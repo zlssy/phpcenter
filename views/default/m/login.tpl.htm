@@ -5,20 +5,25 @@
 	<div class="aw-login-box">
 		<div class="mod-head">
 			<img src="<?php echo G_STATIC_URL; ?>/mobile/img/login-logo.png" alt="" width="198" />
-			<h1><?php echo get_setting('site_name'); ?></h1>
-			<a href="m/register/" class="register btn btn-default"><?php _e('注册'); ?></a>
+            <h1><?php echo get_setting('site_name'); ?></h1>
+            <?php if (get_setting('register_type') == 'open') { ?><a href="m/register/" class="register btn btn-default"><?php _e('注册'); ?></a><?php } ?>
 		</div>
 		<div class="mod-body">
 			<form id="login_form" method="post" onsubmit="return false;" action="account/ajax/login_process/">
 				<input type="hidden" name="return_url" value="<?php echo $this->return_url; ?>" />
+                <input type="hidden" name="_is_mobile" value="1" />
 				<input type="hidden" value="1" name="net_auto_login" />
 				<ul>
-					<li>
-						<input type="text" class="form-control" name="user_name" placeholder="<?php _e('邮箱'); ?>/<?php _e('用户名'); ?>" />
-					</li>
+					<li class="parentCls">
+						<input type="text" class="form-control inputElem" name="user_name" placeholder="工作邮箱" />
+                        <p style="font-size: 12px;margin: 0;padding-left: 3px;" >只支持 *@tcl.com和 *@kuyumall.com的邮箱</p>
+                    </li>
 					<li>
 						<input type="password" class="form-control" name="password" placeholder="<?php _e('密码'); ?>" onkeydown="if (event.keyCode == 13) { AWS.ajax_post($('#login_form')); }" />
 					</li>
+                    <li class="alert alert-danger collapse error_message">
+                        <i class="icon icon-delete"></i> <em></em>
+                    </li>
 					<li>
 						<a class="btn btn-primary btn-block" onclick="AWS.ajax_post($('#login_form'));"><?php _e('登录'); ?></a>
 					</li>
@@ -37,15 +42,18 @@
 						<?php } ?>
 					</li>
 					<li class="text-center meta">
-						<a href="m/find_password/"><?php _e('找回密码'); ?></a>
-						&nbsp;•&nbsp;
-						<a href="m/"><?php _e('游客访问'); ?></a>
+						<a href="<?php echo get_js_url('/m/find_password/', 1); ?>"><?php _e('忘记密码'); ?></a>
 					</li>
+                    <li id="verify_email" style="display: none">
+                        <a href="<?php echo get_js_url('/m/find_password/', 1); ?>" class="btn btn-success btn-block">验证邮箱</a>
+                    </li>
+                    <li id="reset_pwd" style="display: none">
+                        <a href="<?php echo get_js_url('/m/find_password/', 1); ?>" class="btn  btn-success btn-block">初始化密码</a>
+                    </li>
 				</ul>
 			</form>
 		</div>
 	</div>
 </div>
 <!-- end 内容 -->
-
 <?php TPL::output('m/footer.tpl.htm'); ?>

@@ -62,10 +62,13 @@ class AWS_APP
 		$action_method = load_class('core_uri')->action . '_action';
 
 		// 判断
-		if (! is_object($handle_controller) OR ! method_exists($handle_controller, $action_method))
+		if (! is_object($handle_controller) OR  !method_exists($handle_controller, $action_method))
 		{
 			HTTP::error_404();
 		}
+
+        //判断是否需要先登录
+        self::saml_login();
 
 		if (method_exists($handle_controller, 'get_access_rule'))
 		{
@@ -252,6 +255,26 @@ class AWS_APP
 		);
 	}
 
+    /**
+     * 格式化系统返回消息
+     *
+     * @param $data
+     * @param int $ret
+     * @param string $msg
+     * @param array $page
+     * @return array
+     */
+    public static function retjson($data=null, $ret=0, $msg=null, $page = null){
+
+        if(empty($page)){
+            $result = array('code' => $ret, 'msg' => $msg,'data' => $data);
+        }else{
+            $result = array('code' => $ret, 'msg' => $msg,'data' => $data, 'page' => $page);
+        }
+
+        return $result;
+    }
+
 	/**
 	 * 检查用户登录状态
 	 *
@@ -261,16 +284,85 @@ class AWS_APP
 	{
 		if (! AWS_APP::user()->get_info('uid'))
 		{
-			if ($_POST['_post_type'] == 'ajax')
+			if ($_POST['_post_type'] == 'ajax' )
 			{
 				H::ajax_json_output(self::RSM(null, -1, AWS_APP::lang()->_t('会话超时, 请重新登录')));
 			}
 			else
 			{
-				HTTP::redirect('/account/login/url-' . base64_encode($_SERVER['REQUEST_URI']));
+                $refurl = base_url().$_SERVER['REQUEST_URI'];
+
+                $_GET['app'] == 'file' && $_GET['c'] == 'main' && $_GET['act'] == 'download' && $refurl = $_SERVER['HTTP_REFERER'] ;
+
+				HTTP::redirect('/account/login/url-' . base64_encode($refurl));
 			}
 		}
 	}
+
+    /**
+    * 单点登录
+    * */
+    public static function saml_login(){
+        if (! AWS_APP::user()->get_info('uid'))
+        {
+            if(AWS_APP::config()->get('system')->inner_nologin == 1 AND self::is_inner_ip())
+            {
+                /*内网则不用先跳转登录*/
+            }
+            else
+            {
+                if($_GET['app'] == 'account' AND
+                       ( $_GET['c'] == 'main' AND ($_GET['act'] == 'login' OR $_GET['act'] == 'newlogin' OR $_GET['act'] == 'saml' OR $_GET['act'] == 'captcha' )
+                        OR ( $_GET['c'] == 'ajax' AND ($_GET['act'] == 'login_process' OR $_GET['act'] == 'request_find_password' OR $_GET['act'] == 'find_password_modify' OR $_GET['act'] == 'login_check_email'))
+                        OR $_GET['c'] == 'find_password'
+                       )
+                  )
+                {
+                }
+                else if($_GET['app'] == 'm' AND $_GET['c'] == 'main' AND ($_GET['act']=='login' OR $_GET['act'] == 'find_password' OR $_GET['act'] == 'find_password_modify' OR $_GET['act'] == 'find_password_success'))
+                {
+                }
+                else if($_GET['app'] == 'q' AND (($_GET['c'] == 'main' AND ($_GET['act'] == 'success' OR $_GET['act'] == 'show'))  OR $_GET['c'] == 'ajax' AND ($_GET['act'] == 'answer' OR $_GET['act'] == 'query')))
+                {
+                }
+                else
+                {
+                    HTTP::redirect('/account/login/url-' . base64_encode($_SERVER['REQUEST_URI']));
+                }
+            }
+        }
+
+    }
+
+    /**
+     *
+     * 判断是否为内部IP
+     *
+     **/
+    public static function is_inner_ip()
+    {
+        $ip = fetch_ip();
+       
+        return  preg_match("/^(172|192|10|127)\./",$ip);
+
+    }
+
+    public static function mustHttps(){
+
+        if(AWS_APP::config()->get('system')->https_open == 1){
+            if(strpos($_SERVER["SERVER_PROTOCOL"], "https")!==false ||
+                strpos($_SERVER["HTTP_X_FORWARDED_PROTO"], "https")!==false ||
+                $_SERVER["HTTPS"]=="on")
+            {
+                //
+            }
+            else
+            {
+                HTTP::redirect("https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+            }
+        }
+    }
+
 
 	/**
 	 * 获取系统配置

@@ -231,7 +231,13 @@ FileUpload.prototype =
 			response, filename;
 
             response = eval("(" + doc.body.innerHTML + ")");
-
+			if(typeof response.error !== 'undefined' && response.error.length)
+			{
+				AWS.alert(response.error);
+				$(this.options.loading_status).hide();
+				$('.upload-iframe').detach();
+				return false;
+			}
             if (this.type == 'file')
             {
             	this.render(this.li, response);
@@ -388,13 +394,16 @@ FileUpload.prototype =
     // 创建插入按钮
     createInsertBtn : function (attach_id)
     {
+		if(this.options.insertBtnTemplate.length == 0) {
+			return false;
+		}
     	var btn = this.toElement(this.options.insertBtnTemplate), _this = this;
 
     	$(btn).click(function()
 		{
-			if (typeof CKEDITOR != 'undefined')
+			if (typeof UM != 'undefined')
 			{
-				_this.editor.insertText("\n[attach]" + attach_id + "[/attach]\n");
+				_this.editor.execCommand('inserthtml', "\n[attach]" + attach_id + "[/attach]\n");
 			}
 			else
 			{
@@ -459,7 +468,9 @@ FileUpload.prototype =
 		template = this.toElement(template), _this = this;
 
 		$(template).find('.meta').append(deleteBtn);
-		$(template).find('.meta').append(insertBtn);
+		if(insertBtn !== false) {
+			$(template).find('.meta').append(insertBtn);
+		}
 		$(template).find('.meta').append(hiddenInput);
     	$(this.container).find('.upload-list').append(template);
     }

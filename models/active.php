@@ -185,4 +185,11 @@ class active_class extends AWS_MODEL
 
 		return true;
 	}
+
+    public function  get_email_by_key($key){
+
+        $uid = $this->fetch_one('active_data','uid','active_code="'.$key.'"');
+
+        return $uid;
+   }
 }

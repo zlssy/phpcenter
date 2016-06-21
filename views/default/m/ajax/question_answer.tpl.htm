@@ -30,7 +30,7 @@
 		<div class="meta">
 			<span class="operate">
 				<a class="answer_vote agree <?php if ($this->answer_info['agree_status'] == 1) { ?> active<?php } ?>" <?php if ($this->user_id) { ?>onclick="AWS.User.agree_vote($(this), <?php echo $this->answer_info['answer_id']; ?>)"<?php } ?>><i class="icon icon-agree"></i> <b><?php echo $this->answer_info['agree_count']; ?></b></a>
-				<?php if ($this->user_id != $this->answer_info['uid']) { ?>
+				<?php if (0 && $this->user_id != $this->answer_info['uid']) { ?>
 				<a class="answer_vote disagree <?php if ($this->answer_info['agree_status'] == -1) { ?> active<?php } ?>" <?php if ($this->user_id) { ?>onclick="AWS.User.disagree_vote($(this), <?php echo $this->answer_info['answer_id']; ?>)"<?php }?>><i class="icon icon-disagree"></i></a>
 				<?php } ?>
 			</span>

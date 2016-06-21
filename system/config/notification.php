@@ -9,31 +9,31 @@ $config['action_details'][notify_class::TYPE_PEOPLE_FOCUS] = array(
 $config['action_details'][notify_class::TYPE_NEW_ANSWER] = array(
 	'user_setting' => 1,
 	'combine' => 1,
-	'desc' => AWS_APP::lang()->_t('我关注的问题有了新的回复')
+	'desc' => AWS_APP::lang()->_t('我关注的帖子有了新的回复')
 );
 
 $config['action_details'][notify_class::TYPE_INVITE_QUESTION] = array(
 	'user_setting' => 1,
 	'combine' => 1,
-	'desc' => AWS_APP::lang()->_t('有人邀请我回复问题')
+	'desc' => AWS_APP::lang()->_t('有人邀请我回复帖子')
 );
 
 $config['action_details'][notify_class::TYPE_QUESTION_COMMENT] = array(
 	'user_setting' => 1,
 	'combine' => 1,
-	'desc' => AWS_APP::lang()->_t('我的问题被评论')
+	'desc' => AWS_APP::lang()->_t('我的帖子被评论')
 );
 
 $config['action_details'][notify_class::TYPE_ANSWER_COMMENT] = array(
 	'user_setting' => 1,
 	'combine' => 1,
-	'desc' => AWS_APP::lang()->_t('我的问题评论被回复')
+	'desc' => AWS_APP::lang()->_t('我的帖子评论被回复')
 );
 
 $config['action_details'][notify_class::TYPE_COMMENT_AT_ME] = array(
 	'user_setting' => 1,
 	'combine' => 1,
-	'desc' => AWS_APP::lang()->_t('有问题评论提到我')
+	'desc' => AWS_APP::lang()->_t('有帖子评论提到我')
 );
 
 $config['action_details'][notify_class::TYPE_ANSWER_COMMENT_AT_ME] = array(
@@ -63,13 +63,13 @@ $config['action_details'][notify_class::TYPE_ANSWER_THANK] = array(
 $config['action_details'][notify_class::TYPE_QUESTION_THANK] = array(
 	'user_setting' => 1,
 	'combine' => 1,
-	'desc' => AWS_APP::lang()->_t('我发布的问题收到感謝')
+	'desc' => AWS_APP::lang()->_t('我发布的帖子收到感謝')
 );
 
 $config['action_details'][notify_class::TYPE_MOD_QUESTION] = array(
 	'user_setting' => 1,
 	'combine' => 1,
-	'desc' => AWS_APP::lang()->_t('我的问题被编辑')
+	'desc' => AWS_APP::lang()->_t('我的帖子被编辑')
 );
 
 $config['action_details'][notify_class::TYPE_REMOVE_ANSWER] = array(
@@ -81,7 +81,7 @@ $config['action_details'][notify_class::TYPE_REMOVE_ANSWER] = array(
 $config['action_details'][notify_class::TYPE_REDIRECT_QUESTION] = array(
 	'user_setting' => 1,
 	'combine' => 1,
-	'desc' => AWS_APP::lang()->_t('我发布的问题被重定向')
+	'desc' => AWS_APP::lang()->_t('我发布的帖子被重定向')
 );
 
 $config['action_details'][notify_class::TYPE_CONTEXT] = array(
@@ -117,13 +117,13 @@ $config['action_details'][notify_class::TYPE_ARTICLE_REFUSED] = array(
 $config['action_details'][notify_class::TYPE_QUESTION_APPROVED] = array(
 	'user_setting' => 0,
 	'combine' => 0,
-	'desc' => AWS_APP::lang()->_t('问题通过审核')
+	'desc' => AWS_APP::lang()->_t('帖子通过审核')
 );
 
 $config['action_details'][notify_class::TYPE_QUESTION_REFUSED] = array(
 	'user_setting' => 0,
 	'combine' => 0,
-	'desc' => AWS_APP::lang()->_t('问题未通过审核')
+	'desc' => AWS_APP::lang()->_t('帖子未通过审核')
 );
 
 $config['action_details'][notify_class::TYPE_TICKET_REPLIED] = array(

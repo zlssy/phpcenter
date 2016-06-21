@@ -341,7 +341,7 @@ class ajax_weixin extends AWS_ADMIN_CONTROLLER
 
         if (count($article_ids) + count($question_ids) > 9)
         {
-            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('最多可添加 9 个文章和问题')));
+            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('最多可添加 9 个文章和帖子')));
         }
 
         if ($_FILES['main_msg_img']['error'] === UPLOAD_ERR_OK)
@@ -400,7 +400,7 @@ class ajax_weixin extends AWS_ADMIN_CONTROLLER
 
             if (isset($error_msg))
             {
-                H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('上传问题作者的头像失败, 错误信息: %s', $error_msg)));
+                H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('上传帖子作者的头像失败, 错误信息: %s', $error_msg)));
             }
         }
 

@@ -17,7 +17,7 @@ var AW_MOBILE_TEMPLATE = {
 				'</div>'+
 				'<div class="mod-footer">'+
 					'<a class="btn btn-gray btn-mini cancel">' + _t('取消') + '</a>'+
-					'<a class="btn btn-success btn-mini pull-right" onclick="AWS.User.save_comment($(this));">' + _t('评论') + '</a>'+
+					'<a class="btn btn-success btn-mini pull-right" onclick="AWS.User.save_comment($(this));">' + _t('回复') + '</a>'+
 				'</div>'+
 			'</form>'+
 		'</div>',
@@ -79,13 +79,7 @@ var AW_MOBILE_TEMPLATE = {
 					'<form action="' + G_BASE_URL + '/question/ajax/update_answer/answer_id-{{answer_id}}" method="post" onsubmit="return false" id="answer_edit">'+
 					'<div class="modal-body">'+
 						'<input type="hidden" name="attach_access_key" value="{{attach_access_key}}" />'+
-						'<textarea name="answer_content" id="editor_reply" class="form-control textarea_content" rows="5"></textarea>'+
-						'<div class="aw-file-upload-box">'+
-							'<div class="aw-upload-box">'+
-								'<a class="btn btn-default">上传附件</a>'+
-								'<div class="upload-container"></div>'+
-							'</div>'+
-						'</div>'+
+						'<textarea name="answer_content" id="editor_reply" class="form-control textarea_content" style="width:auto;height:100px;"></textarea>'+
 					'</div>'+
 					'<div class="modal-footer">'+
 						'<span><input id="aw-do-delete" type="checkbox" value="1" name="do_delete" /><label for="aw-do-delete">&nbsp;' + _t('删除回复') + '</label></span> &nbsp;&nbsp;'+

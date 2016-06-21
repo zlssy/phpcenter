@@ -115,7 +115,7 @@ class account_class extends AWS_MODEL
      * @param string
      * @return array
      */
-    public function check_login($user_name, $password)
+    public function check_login($user_name, $password, $flag = 0)
     {
         if (!$user_name OR !$password)
         {
@@ -135,7 +135,7 @@ class account_class extends AWS_MODEL
             }
         }
 
-        if (! $this->check_password($password, $user_info['password'], $user_info['salt']))
+        if (! $this->check_password($password, $user_info['password'], $user_info['salt'], $flag))
         {
             return false;
         }
@@ -192,9 +192,9 @@ class account_class extends AWS_MODEL
      * @param string
      * @return boolean
      */
-    public function check_password($password, $db_password, $salt)
+    public function check_password($password, $db_password, $salt, $flag = 0)
     {
-        $password = compile_password($password, $salt);
+        $password = compile_password($password, $salt, $flag);
 
         if ($password == $db_password)
         {
@@ -503,7 +503,7 @@ class account_class extends AWS_MODEL
      * @param string
      * @return int
      */
-    public function insert_user($user_name, $password, $email = null, $sex = 0, $mobile = null)
+    public function insert_user($user_name, $password, $email = null, $sex = 0, $mobile = null, $change_pwd_flag = 0)
     {
         if (!$user_name OR !$password)
         {
@@ -519,19 +519,19 @@ class account_class extends AWS_MODEL
         {
             return false;
         }
-
         $salt = fetch_salt(4);
-
+        $password = compile_password($password, $salt);
         if ($uid = $this->insert('users', array(
             'user_name' => htmlspecialchars($user_name),
-            'password' => compile_password($password, $salt),
+            'password' => $password,
             'salt' => $salt,
             'email' => htmlspecialchars($email),
             'sex' => intval($sex),
             'mobile' => htmlspecialchars($mobile),
             'reg_time' => time(),
             'reg_ip' => ip2long(fetch_ip()),
-            'email_settings' => serialize(get_setting('new_user_email_setting'))
+            'email_settings' => serialize(get_setting('new_user_email_setting')),
+            'change_pwd_flag' => $change_pwd_flag
         )))
         {
             $this->insert('users_attrib', array(
@@ -554,9 +554,9 @@ class account_class extends AWS_MODEL
      * @param string
      * @return int
      */
-    public function user_register($user_name, $password = null, $email = null)
+    public function user_register($user_name, $password = null, $email = null, $change_pwd_flag = 0)
     {
-        if ($uid = $this->insert_user($user_name, $password, $email))
+        if ($uid = $this->insert_user($user_name, $password, $email, 0, null, $change_pwd_flag))
         {
             if ($def_focus_uids_str = get_setting('def_focus_uids'))
             {
@@ -644,21 +644,28 @@ class account_class extends AWS_MODEL
      * @param  int
      * @param  string
      */
-    public function update_user_password($oldpassword, $password, $uid, $salt)
+    public function update_user_password($oldpassword, $password, $uid, $salt, $salt_0 = null, $flag = 0)
     {
         if (!$salt OR !$uid)
         {
             return false;
         }
 
-        $oldpassword = compile_password($oldpassword, $salt);
+        if($flag == 2)
+        {
+            $oldpassword = compile_password(compile_password($oldpassword, $salt_0, 1), $salt);
+        }
+        else
+        {
+            $oldpassword = compile_password($oldpassword, $salt, 1);
+        }
 
         if ($this->count('users', "uid = " . intval($uid) . " AND password = '" . $this->quote($oldpassword) . "'") != 1)
         {
             return false;
         }
 
-        return $this->update_user_password_ingore_oldpassword($password, $uid, $salt);
+        return $this->update_user_password_ingore_oldpassword($password, $uid, $salt, $change_flag = 3);
     }
 
     /**
@@ -668,7 +675,7 @@ class account_class extends AWS_MODEL
      * @param  int
      * @param  string
      */
-    public function update_user_password_ingore_oldpassword($password, $uid, $salt)
+    public function update_user_password_ingore_oldpassword($password, $uid, $salt, $change_flag = 3)
     {
         if (!$salt OR !$password OR !$uid)
         {
@@ -676,8 +683,10 @@ class account_class extends AWS_MODEL
         }
 
         $this->update('users', array(
-            'password' => compile_password($password, $salt),
-            'salt' => $salt
+            'password' => compile_password($password, $salt, 1),
+            'salt_0' => '',
+            'salt' => $salt,
+            'change_pwd_flag' => $change_flag
         ), 'uid = ' . intval($uid));
 
         return true;
@@ -769,7 +778,7 @@ class account_class extends AWS_MODEL
     }
 
 
-    public function setcookie_login($uid, $user_name, $password, $salt, $expire = null, $hash_password = true)
+    public function setcookie_login($uid, $user_name, $password, $salt, $expire = null, $hash_password = true, $flag = 0)
     {
         if (! $uid)
         {
@@ -778,11 +787,11 @@ class account_class extends AWS_MODEL
 
         if (! $expire)
         {
-            HTTP::set_cookie('_user_login', get_login_cookie_hash($user_name, $password, $salt, $uid, $hash_password), null, '/', null, false, true);
+            HTTP::set_cookie('_user_login', get_login_cookie_hash($user_name, $password, $salt, $uid, $hash_password, $flag), null, '/', null, false, true);
         }
         else
         {
-            HTTP::set_cookie('_user_login', get_login_cookie_hash($user_name, $password, $salt, $uid, $hash_password), (time() + $expire), '/', null, false, true);
+            HTTP::set_cookie('_user_login', get_login_cookie_hash($user_name, $password, $salt, $uid, $hash_password, $flag), (time() + $expire), '/', null, false, true);
         }
 
         return true;
@@ -978,7 +987,7 @@ class account_class extends AWS_MODEL
             }
         }
 
-        // 取我关注的话题
+        // 取我关注的标签
         if ($my_focus_topics = $this->model('topic')->get_focus_topic_list($uid, null))
         {
             foreach ($my_focus_topics as $key => $val)

@@ -65,7 +65,7 @@ class admin_class extends AWS_MODEL
 
     public function notifications_crond()
     {
-        $last_version = json_decode(curl_get_contents('http://wenda.wecenter.com/api/version_check.php'), true);
+        //$last_version = json_decode(curl_get_contents('http://wenda.wecenter.com/api/version_check.php'), true);
 
         $admin_notifications = AWS_APP::cache()->get('admin_notifications');
 
@@ -92,10 +92,10 @@ class admin_class extends AWS_MODEL
                                 'verify_approval' => $this->count('verify_apply', 'status = 0'),
 
                                 // 程序更新
-                                'last_version' => array(
-                                                        'version' => $last_version['version'],
-                                                        'build_day' => $last_version['build_day']
-                                                    ),
+//                                'last_version' => array(
+//                                                        'version' => $last_version['version'],
+//                                                        'build_day' => $last_version['build_day']
+//                                                    ),
 
                                 // 新浪微博 Access Token 更新
                                 'sina_users' => $admin_notifications['sina_users'],
@@ -139,7 +139,7 @@ class admin_class extends AWS_MODEL
         {
             $notifications_texts[] = array(
                                             'url' => 'admin/approval/list/',
-                                            'text' => AWS_APP::lang()->_t('有 %s 个问题待审核', $notifications['question_approval'])
+                                            'text' => AWS_APP::lang()->_t('有 %s 个帖子待审核', $notifications['question_approval'])
                                         );
         }
 
@@ -147,7 +147,7 @@ class admin_class extends AWS_MODEL
         {
             $notifications_texts[] = array(
                                             'url' => 'admin/approval/list/type-unverified_modify',
-                                            'text' => AWS_APP::lang()->_t('有 %s 个问题修改待审核', $notifications['unverified_modify_count'])
+                                            'text' => AWS_APP::lang()->_t('有 %s 个帖子修改待审核', $notifications['unverified_modify_count'])
                                         );
         }
 
@@ -155,7 +155,7 @@ class admin_class extends AWS_MODEL
         {
             $notifications_texts[] = array(
                                             'url' => 'admin/approval/list/type-answer',
-                                            'text' => AWS_APP::lang()->_t('有 %s 个回答待审核', $notifications['answer_approval'])
+                                            'text' => AWS_APP::lang()->_t('有 %s 个回复待审核', $notifications['answer_approval'])
                                         );
         }
 

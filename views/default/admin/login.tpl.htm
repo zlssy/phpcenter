@@ -41,12 +41,11 @@
             <?php if ($_GET['url']){ ?>
             <input type="hidden" name="url" value="<?php echo htmlspecialchars($_GET['url']); ?>">
             <?php } ?>
-
             <div class="alert alert-danger collapse error_message"></div>
 
             <div class="form-group">
                 <label><?php _e('邮箱'); ?></label>
-                <input type="text" class="form-control" placeholder="<?php _e('邮箱'); ?>" value="<?php echo $this->user_info['email']; ?>" disabled="disabled" />
+                <input type="text" class="form-control" name="email" placeholder="<?php _e('邮箱'); ?>" value="<?php echo $this->user_info['email']; ?>" disabled="disabled" />
                 <i class="icon icon-user"></i>
             </div>
             <div class="form-group">
@@ -69,7 +68,5 @@
             <?php } ?>
             <button type="submit" class="btn btn-primary" id="login_submit" onclick="AWS.ajax_post($('#login_form'), AWS.ajax_processer, 'error_message');"><?php _e('登录'); ?></button>
         </form>
-
-        <h2 class="text-center text-color-999">WeCenter Admin Control</h2>
     </div>
 </div>

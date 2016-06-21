@@ -29,29 +29,24 @@ class ajax extends AWS_ADMIN_CONTROLLER
 
     public function login_process_action()
     {
-        if (!$this->user_info['permission']['is_administortar'] AND !$this->user_info['permission']['is_moderator'])
-        {
-            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('你没有访问权限, 请重新登录')));
-        }
+        $seccode_verify = AWS_APP::captcha()->is_validate($_POST['seccode_verify']);
 
-        if (get_setting('admin_login_seccode') == 'Y' AND !AWS_APP::captcha()->is_validate($_POST['seccode_verify']))
+        if (get_setting('admin_login_seccode') == 'Y' AND !$seccode_verify )
         {
             H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('请填写正确的验证码')));
         }
 
-        if (get_setting('ucenter_enabled') == 'Y')
+
+        if($this->user_info['change_pwd_flag'] == 2)
         {
-            if (! $user_info = $this->model('ucenter')->login($this->user_info['email'], $_POST['password']))
-            {
-                $user_info = $this->model('account')->check_login($this->user_info['email'], $_POST['password']);
-            }
+            $user_info = $this->model('account')->check_login($this->user_info['email'], compile_password($_POST['password'], $this->user_info['salt_0'], 1));
         }
         else
         {
-            $user_info = $this->model('account')->check_login($this->user_info['email'], $_POST['password']);
+            $user_info = $this->model('account')->check_login($this->user_info['email'], $_POST['password'], 1);
         }
 
-        if ($user_info['uid'])
+        if ($user_info['uid'] AND $user_info['group_id'] == 1)
         {
             $this->model('admin')->set_admin_login($user_info['uid']);
 
@@ -234,7 +229,7 @@ class ajax extends AWS_ADMIN_CONTROLLER
             case 'weibo_msg':
                 if (get_setting('weibo_msg_enabled') != 'question')
                 {
-                    H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入微博消息至问题未启用')));
+                    H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入微博消息至帖子未启用')));
                 }
 
                 switch ($_POST['batch_type'])
@@ -270,7 +265,7 @@ class ajax extends AWS_ADMIN_CONTROLLER
 
                 if ($receiving_email_global_config['enabled'] != 'question')
                 {
-                    H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入邮件至问题未启用')));
+                    H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('导入邮件至帖子未启用')));
                 }
 
                 switch ($_POST['batch_type'])
@@ -425,7 +420,7 @@ class ajax extends AWS_ADMIN_CONTROLLER
 
         if ($this->model('category')->contents_exists($_POST['category_id']))
         {
-            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('分类下存在内容, 请先批量移动问题到其它分类, 再删除当前分类')));
+            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('分类下存在内容, 请先批量移动帖子到其它分类, 再删除当前分类')));
         }
 
         $this->model('category')->delete_category('question', $_POST['category_id']);
@@ -922,7 +917,7 @@ class ajax extends AWS_ADMIN_CONTROLLER
     {
         if (!$_POST['question_ids'])
         {
-            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('请选择问题进行操作')));
+            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('请选择帖子进行操作')));
         }
 
         switch ($_POST['action'])
@@ -1391,7 +1386,7 @@ class ajax extends AWS_ADMIN_CONTROLLER
 
             if ($_POST['password'])
             {
-                $this->model('account')->update_user_password_ingore_oldpassword($_POST['password'], $user_info['uid'], fetch_salt(4));
+                $this->model('account')->update_user_password_ingore_oldpassword(md5($_POST['password']), $user_info['uid'],fetch_salt(4),3);
             }
 
             $this->model('account')->update_users_attrib_fields(array(
@@ -1432,7 +1427,7 @@ class ajax extends AWS_ADMIN_CONTROLLER
                 H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('E-Mail 已经被使用, 或格式不正确')));
             }
 
-            if (strlen($_POST['password']) < 6 or strlen($_POST['password']) > 16)
+            if (strlen($_POST['password']) < 6 or strlen($_POST['password']) > 32)
             {
                 H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('密码长度不符合规则')));
             }

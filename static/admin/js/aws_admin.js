@@ -143,6 +143,30 @@ var AWS =
 	    	var type = 'default';
 	    }
 
+        if(formEl.attr('id') == 'login_form')
+        {
+            if(formEl.find("input[name=password]").attr('type') == 'password' )
+            {
+               var password = hex_md5(formEl.find("input[name=password]").val());
+            }
+
+            var url = formEl.find("input[name=url]").val();
+            var email = formEl.find("input[name=email]").val();
+            var seccode_verify = formEl.find("input[name=seccode_verify]").val();
+            var custom_data = {
+                url:url,
+                email:email,
+                password:password,
+                seccode_verify:seccode_verify
+            }
+            $.post(formEl.attr("action"),custom_data , function (result)
+            {
+                processer(type, result);
+            }, 'json');
+
+            return false;
+        }
+
 	    var custom_data = {
 	        _post_type: 'ajax'
 	    };
@@ -383,7 +407,7 @@ var AWS =
 		    	break;
 
 		    	case 'confirm':
-		    	//后台根话题
+		    	//后台根标签
 		    	case 'adminCategoryMove':
 		    		$('.aw-confirm-box .yes, .aw-category-move-box .yes').click(function()
 		    		{

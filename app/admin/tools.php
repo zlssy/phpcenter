@@ -77,7 +77,7 @@ class tools extends AWS_ADMIN_CONTROLLER
                         ), 'question_id = ' . intval($val['question_id']));
                     }
 
-                    H::redirect_msg(AWS_APP::lang()->_t('正在转换问题内容 BBCode') . ', ' . AWS_APP::lang()->_t('批次: %s', $_GET['page']), '/admin/tools/bbcode_to_markdown/page-' . ($_GET['page'] + 1) . '__per_page-' . $_GET['per_page']);
+                    H::redirect_msg(AWS_APP::lang()->_t('正在转换帖子内容 BBCode') . ', ' . AWS_APP::lang()->_t('批次: %s', $_GET['page']), '/admin/tools/bbcode_to_markdown/page-' . ($_GET['page'] + 1) . '__per_page-' . $_GET['per_page']);
                 }
                 else
                 {
@@ -137,7 +137,7 @@ class tools extends AWS_ADMIN_CONTROLLER
                         ), 'question_id = ' . intval($val['question_id']));
                     }
 
-                    H::redirect_msg(AWS_APP::lang()->_t('正在转换问题内容 Markdown') . ', ' . AWS_APP::lang()->_t('批次: %s', $_GET['page']), '/admin/tools/markdown_to_bbcode/page-' . ($_GET['page'] + 1) . '__per_page-' . $_GET['per_page']);
+                    H::redirect_msg(AWS_APP::lang()->_t('正在转换帖子内容 Markdown') . ', ' . AWS_APP::lang()->_t('批次: %s', $_GET['page']), '/admin/tools/markdown_to_bbcode/page-' . ($_GET['page'] + 1) . '__per_page-' . $_GET['per_page']);
                 }
                 else
                 {
@@ -212,7 +212,7 @@ class tools extends AWS_ADMIN_CONTROLLER
                 $this->model('posts')->set_posts_index($val['question_id'], 'question', $val);
             }
 
-            H::redirect_msg(AWS_APP::lang()->_t('正在更新问题搜索索引') . ', ' . AWS_APP::lang()->_t('批次: %s', $_GET['page']), '/admin/tools/update_question_search_index/page-' . ($_GET['page'] + 1) . '__per_page-' . $_GET['per_page']);
+            H::redirect_msg(AWS_APP::lang()->_t('正在更新帖子搜索索引') . ', ' . AWS_APP::lang()->_t('批次: %s', $_GET['page']), '/admin/tools/update_question_search_index/page-' . ($_GET['page'] + 1) . '__per_page-' . $_GET['per_page']);
         }
         else
         {

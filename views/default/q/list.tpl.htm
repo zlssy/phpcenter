@@ -1,0 +1,64 @@
+<?php TPL::output('global/header.tpl.htm'); ?>
+<div class="aw-container-wrap">
+    <div class="container questionnaireReport" style="display: block;">
+        <div class="row">
+            <div class="aw-content-wrap clearfix">
+                <div class="results">
+                    <div class="wrap">
+                        <div class="aw-topic-bar clearfix questionnaire-query">
+                            <!--<a href="q/" class="btn btn-normal <?php echo($this->alllist ? ' btn-primary ' : ' btn-default '); ?>">所有问卷</a>-->
+                            <a href="q/my/" class="btn btn-normal <?php echo(!$this->alllist ? ' btn-primary ' : ' btn-default '); ?>">我的问卷</a>
+                            <a href="q/add/" id="addQuestion" class="btn btn-normal btn-success pull-right">创建新问卷</a>
+                        </div>
+                        <div id="ajax_box" class="report"<?php echo($this->alllist ? ' data-all="1"' : ""); ?>>
+                            <div class="cat-containers">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <td width="<?php echo !$this->alllist?"30%":"40%" ?>">问卷名称</td>
+                                            <td class="col_user">发布人</td>
+                                            <td>开始时间</td>
+                                            <td>结束时间</td>
+                                            <td>状态</td>
+                                            <?php if(!$this->alllist){ ?><td class="col_comm" style="width:19%">操作</td><?php }?>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagenav text-right"></div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script id="qTemplate" type="text/template">
+    <%
+    _.each(obj.items,function(_q,i,q_arr){
+    %>
+    <tr>
+        <td>
+            <a target="_blank" href="q/show/<%=_q.sn%>"><%-_q.title%></a>
+        </td>
+        <td class="col_user"><%-_q.username%></td>
+        <td><%-_q.starttime != null ? dateFormat(new Date(_q.starttime*1000)) : "不限"%></td>
+        <td><%-_q.endtime != null ? dateFormat(new Date(_q.endtime*1000)) : "不限"%></td>
+        <td><%-statumap[_q.status]%></td>
+        <?php if(!$this->alllist){ ?>
+        <td class="col_comm">
+            <a href="q/edit/<%-_q.sn%>">编辑</a> |
+            <a href="q/stat/<%-_q.sn%>">统计结果</a> |
+            <a href="q/ajax/download/?sn=<%-_q.sn%>">导出</a> |
+            <a href="q/share/<%-_q.sn%>">分享</a>
+        </td>
+        <?php }?>
+    </tr>
+    <%})%>
+</script>
+<script type="text/javascript">var QID = "<?php echo $_GET['id']?>"</script>
+<?php TPL::output('global/footer.tpl.htm'); ?>

@@ -1,0 +1,54 @@
+<?php TPL::output('global/header.tpl.htm'); ?>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #444;
+    }
+
+    .fb-main {
+        margin-top: 20px;
+        border-top:1px solid #DDD;
+        padding-bottom: 24px;
+    }
+    
+    .fb-left {padding-top:0px;}
+    .fb-main input[type=text] {
+        height: 26px;
+        margin-bottom: 3px;
+    }
+    .fb-main .form-control[type=text]{
+        height: auto;
+        margin-bottom: 0px;
+    }
+
+    select {
+        margin-bottom: 5px;
+        font-size: 20px;
+    }
+
+    #editor img {
+        max-width: 500px;
+    }
+</style>
+<script>
+    var id = '<?php echo $this->q_id?>';
+</script>
+<div class="aw-container-wrap">
+    <div class="container clearfix">
+        <div class="row">
+            <div class="aw-content-wrap clearfix">
+                <div class="aw-topic-bar clearfix">
+                    <a href="q/my/" class="btn btn-normal btn-default">我的问卷</a>
+                </div>
+                <div class='fb-main'>
+                    <div class="fb-body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="<?php echo G_STATIC_URL; ?>/js/questionnaire/add.js"></script>
+<?php TPL::output('global/footer.tpl.htm'); ?>

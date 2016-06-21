@@ -50,12 +50,12 @@ var AW_TEMPLATE = {
 				'<div class="modal-content">'+
 					'<div class="modal-header">'+
 						'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>'+
-						'<h3 class="modal-title" id="myModalLabel">' + _t('问题重定向至') + '</h3>'+
+						'<h3 class="modal-title" id="myModalLabel">' + _t('帖子重定向至') + '</h3>'+
 					'</div>'+
 					'<div class="modal-body">'+
-						'<p>' + _t('将问题重定向至') + '</p>'+
+						'<p>' + _t('将帖子重定向至') + '</p>'+
 						'<div class="aw-question-drodpwon">'+
-							'<input id="question-input" class="form-control" type="text" data-id="{{data_id}}" placeholder="' + _t('搜索问题') + '" />'+
+							'<input id="question-input" class="form-control" type="text" data-id="{{data_id}}" placeholder="' + _t('搜索帖子') + '" />'+
 							'<div class="aw-dropdown"><i class="aw-icon i-dropdown-triangle active"></i><p class="title">' + _t('没有找到相关结果') + '</p><ul class="aw-dropdown-list"></ul></div>'+
 						'</div>'+
 						'<p class="clearfix"><a href="javascript:;" class="btn btn-large btn-success pull-right" onclick="$(\'.alert-box\').modal(\'hide\');">' + _t('放弃操作') + '</a></p>'+
@@ -130,7 +130,7 @@ var AW_TEMPLATE = {
 						'<textarea class="aw-comment-txt form-control" rows="2" name="message" placeholder="' + _t('评论一下') + '..."></textarea>'+
 						'<div class="aw-comment-box-btn">'+
 							'<span class="pull-right">'+
-								'<a href="javascript:;" class="btn btn-mini btn-success" onclick="AWS.User.save_comment($(this));">' + _t('评论') + '</a>'+
+								'<a href="javascript:;" class="btn btn-mini btn-success" onclick="AWS.User.save_comment($(this));">' + _t('回复') + '</a>'+
 								'<a href="javascript:;" class="btn btn-mini btn-default close-comment-box">' + _t('取消') + '</a>'+
 							'</span>'+
 						'</div>'+

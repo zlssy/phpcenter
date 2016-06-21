@@ -6,7 +6,7 @@
 			<a href="m/question/<?php echo $val['item_id']; ?>#!answer_form"><?php echo $val['question_info']['question_content']; ?></a>
 		</h2>
 		<p class="color-999">
-			<?php echo nl2br(htmlspecialchars($val['data']['message'])); ?>
+			<?php echo $val['data']['message']; ?>
 		</p>
 	</div>
 	<div class="mod-footer active">

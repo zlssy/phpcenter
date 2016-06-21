@@ -31,13 +31,39 @@ class find_password extends AWS_CONTROLLER
 
 	public function setup()
 	{
-		$this->crumb(AWS_APP::lang()->_t('找回密码'), '/account/find_password/');
+		$this->crumb(AWS_APP::lang()->_t('设置密码'), '/account/find_password/');
 
 		TPL::import_css('css/register.css');
 	}
 
 	public function index_action()
 	{
+        $id = intval($_GET['id'])?intval($_GET['id']) : 1;
+
+        switch($id)
+        {
+            case 1:
+                $msg = '找回密码';
+                break;
+            case 2:
+                $msg = '验证邮箱';
+                break;
+            case 3:
+                $msg = '通过邮箱进行密码初始化设置';
+                break;
+            default :
+                $msg = '找回密码';
+                break;
+        }
+
+        TPL::assign('msg',$msg);
+
+        if($id == 2 OR $id == 3)
+        {
+            $email = AWS_APP::session()->verify_email;
+            TPL::assign('email',$email);
+        }
+
 		TPL::output('account/find_password/index');
 	}
 
@@ -64,6 +90,14 @@ class find_password extends AWS_CONTROLLER
 		{
 			H::redirect_msg(AWS_APP::lang()->_t('链接已失效'), '/');
 		}
+
+        TPL::import_js('js/md5.js');
+
+        $uid = $this->model('active')->get_email_by_key(htmlspecialchars($_GET['key']));
+
+        $user = $this->model('account')->get_user_info_by_uid($uid);
+
+        TPL::assign('email',$user['email']);
 
 		TPL::output('account/find_password/modify');
 	}

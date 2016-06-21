@@ -22,7 +22,7 @@ class article_class extends AWS_MODEL
 {
 	public function get_article_info_by_id($article_id)
 	{
-		if (!is_digits($article_id))
+		if (!is_digits($article_id) || is_array($article_id))
 		{
 			return false;
 		}
@@ -68,6 +68,7 @@ class article_class extends AWS_MODEL
 
 			$comment['user_info'] = $comment_user_infos[$comment['uid']];
 			$comment['at_user_info'] = $comment_user_infos[$comment['at_uid']];
+			$comment['message'] = parse_emotion($comment['message']);
 		}
 
 		return $comment;
@@ -116,6 +117,7 @@ class article_class extends AWS_MODEL
 			{
 				$comments[$key]['user_info'] = $comment_user_infos[$val['uid']];
 				$comments[$key]['at_user_info'] = $comment_user_infos[$val['at_uid']];
+				$comments[$key]['message'] = parse_emotion($comments[$key]['message']);
 			}
 		}
 
@@ -131,7 +133,7 @@ class article_class extends AWS_MODEL
 
 		$this->delete('article_comments', "article_id = " . intval($article_id)); // 删除关联的回复内容
 
-		$this->delete('topic_relation', "`type` = 'article' AND item_id = " . intval($article_id));		// 删除话题关联
+		$this->delete('topic_relation', "`type` = 'article' AND item_id = " . intval($article_id));		// 删除标签关联
 
 		ACTION_LOG::delete_action_history('associate_type = ' . ACTION_LOG::CATEGORY_QUESTION . ' AND associate_action IN(' . ACTION_LOG::ADD_ARTICLE . ', ' . ACTION_LOG::ADD_AGREE_ARTICLE . ', ' . ACTION_LOG::ADD_COMMENT_ARTICLE . ') AND associate_id = ' . intval($article_id));	// 删除动作
 
@@ -196,7 +198,7 @@ class article_class extends AWS_MODEL
 
 		$this->update('article', array(
 			'title' => htmlspecialchars($title),
-			'message' => htmlspecialchars($message),
+			'message' => html_purify($message),
 			'category_id' => intval($category_id)
 		), 'id = ' . intval($article_id));
 

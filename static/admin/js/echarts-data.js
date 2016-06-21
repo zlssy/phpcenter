@@ -258,7 +258,7 @@ Echarts.prototype = {
                 break;
 
             case 'new_question':
-                arr.push('新增问题');
+                arr.push('新增帖子');
                 break;
 
             case 'new_user':
@@ -286,11 +286,11 @@ Echarts.prototype = {
                 break;
 
             case 'new_question_thanks':
-                arr.push('新增问题感谢');
+                arr.push('新增帖子感谢');
                 break;
 
             case 'new_question_redirect':
-                arr.push('新增问题重定向');
+                arr.push('新增帖子重定向');
                 break;
             }
         }

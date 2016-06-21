@@ -19,7 +19,7 @@ var AW_TEMPLATE = {
 							'<i class="{{verified_enterprise}} pull-left" title="{{verified_title}}"></i>'+
 						'</p>'+
 						'<p class="aw-user-center-follow-meta">'+
-							'<span>' + _t('威望') + ': <em class="aw-text-color-green">{{reputation}}</em></span>'+
+							'<span>' + _t('感谢') + ': <em class="aw-text-color-green">{{reputation}}</em></span>'+
 							'<span>' + _t('赞同') + ': <em class="aw-text-color-orange">{{agree_count}}</em></span>'+
 						'</p>'+
 					'</div>'+
@@ -83,13 +83,7 @@ var AW_TEMPLATE = {
 						'<div class="modal-body">'+
 							'<div class="alert alert-danger collapse error_message"><i class="icon icon-delete"></i> <em></em></div>'+
 							'<input type="hidden" name="attach_access_key" value="{{attach_access_key}}" />'+
-							'<textarea name="answer_content" id="editor_reply" class="form-control" rows="10"></textarea>'+
-							'<div class="aw-file-upload-box">'+
-								'<div class="aw-upload-box">'+
-									'<a class="btn btn-default">上传附件</a>'+
-									'<div class="upload-container"></div>'+
-								'</div>'+
-							'</div>'+
+							'<textarea name="answer_content" id="editor_reply" class="form-control" style="width:701px;height:288px;"></textarea>'+
 						'</div>'+
 						'<div class="modal-footer">'+
 							'<span><input id="aw-do-delete" type="checkbox" value="1" name="do_delete" /><label for="aw-do-delete">' + _t('删除回复') + '</label></span>'+
@@ -157,12 +151,12 @@ var AW_TEMPLATE = {
 				'<div class="modal-content">'+
 					'<div class="modal-header">'+
 						'<a type="button" class="close icon icon-delete" data-dismiss="modal" aria-hidden="true"></a>'+
-						'<h3 class="modal-title" id="myModalLabel">' + _t('问题重定向至') + '</h3>'+
+						'<h3 class="modal-title" id="myModalLabel">' + _t('帖子重定向至') + '</h3>'+
 					'</div>'+
 					'<div class="modal-body">'+
-						'<p>' + _t('将问题重定向至') + '</p>'+
+						'<p>' + _t('将帖子重定向至') + '</p>'+
 						'<div class="aw-question-drodpwon">'+
-							'<input id="question-input" class="form-control" type="text" data-id="{{data_id}}" placeholder="' + _t('搜索问题或问题 ID') + '" />'+
+							'<input id="question-input" class="form-control" type="text" data-id="{{data_id}}" placeholder="' + _t('搜索帖子或帖子 ID') + '" />'+
 							'<div class="aw-dropdown"><p class="title">' + _t('没有找到相关结果') + '</p><ul class="aw-dropdown-list"></ul></div>'+
 						'</div>'+
 						'<p class="clearfix"><a href="javascript:;" class="btn btn-large btn-success pull-right" onclick="$(\'.alert-box\').modal(\'hide\');">' + _t('放弃操作') + '</a></p>'+
@@ -177,7 +171,7 @@ var AW_TEMPLATE = {
 					'<div class="modal-content">'+
 						'<div class="modal-header">'+
 							'<a type="button" class="close icon icon-delete" data-dismiss="modal" aria-hidden="true"></a>'+
-							'<h3 class="modal-title" id="myModalLabel">' + _t('发起问题') + '</h3>'+
+							'<h3 class="modal-title" id="myModalLabel">' + _t('发起帖子') + '</h3>'+
 						'</div>'+
 						'<div class="modal-body">'+
 							'<div class="alert alert-danger collapse error_message"><i class="icon icon-delete"></i> <em></em></div>'+
@@ -186,14 +180,14 @@ var AW_TEMPLATE = {
 								'<input type="hidden" name="post_hash" value="' + G_POST_HASH + '" />'+
 								'<input type="hidden" name="ask_user_id" value="{{ask_user_id}}" />'+
 								'<div>'+
-									'<textarea class="form-control" placeholder="' + _t('写下你的问题') + '..." rows="1" name="question_content" id="quick_publish_question_content" onkeydown="if (event.keyCode == 13) { return false; }"></textarea>'+
+									'<textarea class="form-control" placeholder="' + _t('写下你的帖子') + '..." rows="1" name="question_content" id="quick_publish_question_content" onkeydown="if (event.keyCode == 13) { return false; }"></textarea>'+
 									'<div class="aw-publish-suggest-question collapse">'+
-										'<p class="text-color-999">你的问题可能已经有答案</p>'+
+										'<p class="text-color-999">你的帖子可能已经有答案</p>'+
 										'<ul class="aw-dropdown-list">'+
 										'</ul>'+
 									'</div>'+
 								'</div>'+
-								'<textarea name="question_detail" class="form-control" rows="4" placeholder="' + _t('问题背景、条件等详细信息') + '..."></textarea>'+
+								'<textarea name="question_detail" class="form-control" rows="4" placeholder="' + _t('帖子背景、条件等详细信息') + '..."></textarea>'+
 								'<div class="aw-publish-title">'+
 									'<div class="dropdown" id="quick_publish_category_chooser">'+
 										'<div class="dropdown-toggle" data-toggle="dropdown">'+
@@ -288,7 +282,7 @@ var AW_TEMPLATE = {
 						'<textarea class="aw-comment-txt form-control" rows="2" name="message" placeholder="' + _t('评论一下') + '..."></textarea>'+
 						'<div class="aw-comment-box-btn">'+
 							'<span class="pull-right">'+
-								'<a href="javascript:;" class="btn btn-mini btn-success" onclick="AWS.User.save_comment($(this));">' + _t('评论') + '</a>'+
+								'<a href="javascript:;" class="btn btn-mini btn-success" onclick="AWS.User.save_comment($(this));">' + _t('回复') + '</a>'+
 								'<a href="javascript:;" class="btn btn-mini btn-gray close-comment-box">' + _t('取消') + '</a>'+
 							'</span>'+
 						'</div>'+
@@ -316,7 +310,7 @@ var AW_TEMPLATE = {
 					'<div class="modal-content">'+
 						'<div class="modal-header">'+
 							'<a type="button" class="close icon icon-delete" data-dismiss="modal" aria-hidden="true"></a>'+
-							'<h3 class="modal-title" id="myModalLabel">' + _t('举报问题') + '</h3>'+
+							'<h3 class="modal-title" id="myModalLabel">' + _t('举报帖子') + '</h3>'+
 						'</div>'+
 						'<form id="quick_publish" method="post" action="' + G_BASE_URL + '/question/ajax/save_report/">'+
 							'<input type="hidden" name="type" value="{{item_type}}" />'+

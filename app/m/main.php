@@ -156,14 +156,14 @@ class main extends AWS_CONTROLLER
 
 	public function focus_action()
 	{
-		$this->crumb(AWS_APP::lang()->_t('我关注的问题'), '/m/focus/');
+		$this->crumb(AWS_APP::lang()->_t('我关注的帖子'), '/m/focus/');
 
 		TPL::output('m/focus');
 	}
 
 	public function invite_action()
 	{
-		$this->crumb(AWS_APP::lang()->_t('邀请我回答的问题'), '/m/invite/');
+		$this->crumb(AWS_APP::lang()->_t('邀请我回答的帖子'), '/m/invite/');
 
 		TPL::output('m/invite');
 	}
@@ -265,7 +265,7 @@ class main extends AWS_CONTROLLER
 		{
 			header('HTTP/1.1 404 Not Found');
 
-			H::redirect_msg(AWS_APP::lang()->_t('问题不存在或已被删除'), '/m/explore/');
+			H::redirect_msg(AWS_APP::lang()->_t('帖子不存在或已被删除'), '/m/explore/');
 		}
 
 		$question_info['redirect'] = $this->model('question')->get_redirect($question_info['question_id']);
@@ -279,7 +279,7 @@ class main extends AWS_CONTROLLER
 		{
 			if ($from_question = $this->model('question')->get_question_info_by_id($_GET['rf']))
 			{
-				$redirect_message[] = AWS_APP::lang()->_t('从问题') . ' <a href="' . get_js_url('/m/question/' . $_GET['rf'] . '?rf=false') . '">' . $from_question['question_content'] . '</a> ' . AWS_APP::lang()->_t('跳转而来');
+				$redirect_message[] = AWS_APP::lang()->_t('从帖子') . ' <a href="' . get_js_url('/m/question/' . $_GET['rf'] . '?rf=false') . '">' . $from_question['question_content'] . '</a> ' . AWS_APP::lang()->_t('跳转而来');
 			}
 		}
 
@@ -291,14 +291,14 @@ class main extends AWS_CONTROLLER
 			}
 			else
 			{
-				$redirect_message[] = AWS_APP::lang()->_t('重定向目标问题已被删除, 将不再重定向问题');
+				$redirect_message[] = AWS_APP::lang()->_t('重定向目标帖子已被删除, 将不再重定向帖子');
 			}
 		}
 		else if ($question_info['redirect'])
 		{
 			if ($target_question)
 			{
-				$message = AWS_APP::lang()->_t('此问题将跳转至') . ' <a href="' . get_js_url('/m/question/' . $question_info['redirect']['target_id'] . '?rf=' . $question_info['question_id']) . '">' . $target_question['question_content'] . '</a>';
+				$message = AWS_APP::lang()->_t('此帖子将跳转至') . ' <a href="' . get_js_url('/m/question/' . $question_info['redirect']['target_id'] . '?rf=' . $question_info['question_id']) . '">' . $target_question['question_content'] . '</a>';
 
 				if ($this->user_id AND ($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator'] OR (!$this->question_info['lock'] AND $this->user_info['permission']['redirect_question'])))
 				{
@@ -309,7 +309,7 @@ class main extends AWS_CONTROLLER
 			}
 			else
 			{
-				$redirect_message[] = AWS_APP::lang()->_t('重定向目标问题已被删除, 将不再重定向问题');
+				$redirect_message[] = AWS_APP::lang()->_t('重定向目标帖子已被删除, 将不再重定向帖子');
 			}
 		}
 
@@ -329,7 +329,7 @@ class main extends AWS_CONTROLLER
 			}
 		}
 
-		$question_info['question_detail'] = FORMAT::parse_attachs(nl2br(FORMAT::parse_bbcode($question_info['question_detail'])));
+		$question_info['question_detail'] = replace_old_new_img_url($question_info['question_detail']);
 
 		TPL::assign('question_id', $question_info['question_id']);
 		TPL::assign('question_info', $question_info);
@@ -511,7 +511,13 @@ class main extends AWS_CONTROLLER
 			TPL::assign('next_page', $_GET['page']);
 		}
 
+		//导入umeditor编辑器
+		import_editor_static_files();
+
+		TPL::import_css('/mobile/css/smile_img.css');
+
 		TPL::import_js(array(
+			'/mobile/js/emotion.js',
 			'js/fileupload.js'
 		));
 
@@ -533,6 +539,10 @@ class main extends AWS_CONTROLLER
 				HTTP::redirect('/m/');
 			}
 		}
+        else
+        {
+            AWS_APP::mustHttps();
+        }
 
 		if ($url)
 		{
@@ -551,6 +561,8 @@ class main extends AWS_CONTROLLER
 		{
 			HTTP::redirect($this->model('openid_weixin_weixin')->redirect_url($return_url));
 		}
+        TPL::import_css('css/emailAutoComplete.css');
+        TPL::import_js(array('js/md5.js','js/emailAutoComplete.js' ));
 
 		TPL::assign('body_class', 'explore-body');
 		TPL::assign('return_url', strip_tags($return_url));
@@ -562,6 +574,11 @@ class main extends AWS_CONTROLLER
 
 	public function register_action()
 	{
+        if(AWS_APP::config()->get('system')->tcllogin['Open'] == 1)
+        {
+            HTTP::redirect('/');
+        }
+
 		if (($this->user_id AND !$_GET['weixin_id']) OR $this->user_info['weixin_id'])
 		{
 			if ($url)
@@ -608,7 +625,14 @@ class main extends AWS_CONTROLLER
 
 	public function find_password_action()
 	{
-		$this->crumb(AWS_APP::lang()->_t('找回密码'), '/m/find_password/');
+		$this->crumb(AWS_APP::lang()->_t('设置密码'), '/m/find_password/');
+
+        $email = AWS_APP::session()->verify_email;
+
+        if($email)
+        {
+            TPL::assign('email',$email);
+        }
 
 		TPL::output('m/find_password');
 	}
@@ -617,7 +641,7 @@ class main extends AWS_CONTROLLER
 	{
 		TPL::assign('email', AWS_APP::session()->find_password);
 
-		$this->crumb(AWS_APP::lang()->_t('找回密码'), '/m/find_password_success/');
+		$this->crumb(AWS_APP::lang()->_t('设置密码'), '/m/find_password_success/');
 
 		TPL::output('m/find_password_success');
 	}
@@ -633,6 +657,20 @@ class main extends AWS_CONTROLLER
 		{
 			H::redirect_msg(AWS_APP::lang()->_t('链接已失效'), '/');
 		}
+
+        TPL::import_js('js/md5.js');
+
+        $salt_0 = fetch_salt(6);
+
+        unset(AWS_APP::session()->find_password_salt_0);
+
+        AWS_APP::session()->find_password_salt_0 = $salt_0;
+
+        $uid = $this->model('active')->get_email_by_key(htmlspecialchars($_GET['key']));
+
+        $user = $this->model('account')->get_user_info_by_uid($uid);
+
+        TPL::assign('email',$user['email']);
 
 		TPL::output('m/find_password_modify');
 	}
@@ -906,7 +944,6 @@ class main extends AWS_CONTROLLER
 		{
 			$topic_info = $this->model('topic')->get_topic_by_url_token($_GET['id']);
 		}
-
 		if (!$topic_info)
 		{
 			header('HTTP/1.1 404 Not Found');
@@ -980,7 +1017,6 @@ class main extends AWS_CONTROLLER
 		TPL::assign('redirect_message', $redirect_message);
 
 		TPL::assign('best_answer_users', $this->model('topic')->get_best_answer_users_by_topic_id($topic_info['topic_id'], 5));
-
 		TPL::output('m/topic');
 	}
 
@@ -1014,14 +1050,14 @@ class main extends AWS_CONTROLLER
 		{
 			if (!$question_info = $this->model('question')->get_question_info_by_id($_GET['id']))
 			{
-				H::redirect_msg(AWS_APP::lang()->_t('指定问题不存在'));
+				H::redirect_msg(AWS_APP::lang()->_t('指定帖子不存在'));
 			}
 
 			if (!$this->user_info['permission']['is_administortar'] AND !$this->user_info['permission']['is_moderator'] AND !$this->user_info['permission']['edit_question'])
 			{
 				if ($question_info['published_uid'] != $this->user_id)
 				{
-					H::redirect_msg(AWS_APP::lang()->_t('你没有权限编辑这个问题'), '/m/question/' . $_GET['id']);
+					H::redirect_msg(AWS_APP::lang()->_t('你没有权限编辑这个帖子'), '/m/question/' . $_GET['id']);
 				}
 			}
 
@@ -1029,7 +1065,7 @@ class main extends AWS_CONTROLLER
 		}
 		else if (!$this->user_info['permission']['publish_question'])
 		{
-			H::redirect_msg(AWS_APP::lang()->_t('你所在用户组没有权限发布问题'));
+			H::redirect_msg(AWS_APP::lang()->_t('你所在用户组没有权限发布帖子'));
 		}
 		else if ($this->is_post() AND $_POST['question_detail'])
 		{
@@ -1082,7 +1118,12 @@ class main extends AWS_CONTROLLER
 			TPL::assign('question_category_list', $this->model('system')->build_category_html('question', 0, $question_info['category_id']));
 		}
 
+		//导入umeditor文件
+		import_editor_static_files();
+		TPL::import_css('/mobile/css/smile_img.css');
+
 		TPL::import_js(array(
+			'/mobile/js/emotion.js',
 			'js/fileupload.js'
 		));
 
@@ -1120,7 +1161,7 @@ class main extends AWS_CONTROLLER
 
 		$article_info['user_info'] = $this->model('account')->get_user_info_by_uid($article_info['uid'], true);
 
-		$article_info['message'] = FORMAT::parse_attachs(nl2br(FORMAT::parse_bbcode($article_info['message'])));
+		$article_info['message'] = replace_old_new_img_url($article_info['message']);
 
 		if ($this->user_id)
 		{
@@ -1162,6 +1203,11 @@ class main extends AWS_CONTROLLER
 			'total_rows' => $article_info['comments'],
 			'per_page' => 100
 		))->create_links());
+
+		//导入m端新样式文件
+		TPL::import_css('/mobile/css/smile_img.css');
+		//导入m端表情js文件
+		TPL::import_js('/mobile/js/emotion.js');
 
 		TPL::output('m/article');
 	}
@@ -1208,13 +1254,13 @@ class main extends AWS_CONTROLLER
 
 	public function nearby_question_action()
 	{
-		$this->crumb(AWS_APP::lang()->_t('附近的问题'), '/m/nearby_question/');
+		$this->crumb(AWS_APP::lang()->_t('附近的帖子'), '/m/nearby_question/');
 
 		if ($weixin_user = $this->model('openid_weixin_weixin')->get_user_info_by_uid($this->user_id))
 		{
 			if (!$near_by_questions = $this->model('question')->get_near_by_questions($weixin_user['longitude'], $weixin_user['latitude'], $this->user_id, 20))
 			{
-				H::redirect_msg(AWS_APP::lang()->_t('你的附近暂时没有问题'));
+				H::redirect_msg(AWS_APP::lang()->_t('你的附近暂时没有帖子'));
 			}
 		}
 		else

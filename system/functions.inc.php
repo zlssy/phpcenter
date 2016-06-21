@@ -27,7 +27,7 @@
  *
  * @return string
  */
-function base_url()
+function base_url($http_flag = 0)
 {
 	$clean_url = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : NULL;
 	$clean_url = dirname(rtrim($_SERVER['PHP_SELF'], $clean_url));
@@ -41,6 +41,11 @@ function base_url()
 	{
 		$scheme = 'http';
 	}
+
+    if($http_flag == 1)
+    {
+        $scheme = 'http';
+    }
 
 	return $scheme . '://' . $clean_url;
 }
@@ -572,7 +577,7 @@ function show_error($exception_message, $error_message = '')
 
 	if (get_setting('report_diagnostics') == 'Y' AND class_exists('AWS_APP', false))
 	{
-		AWS_APP::mail()->send('wecenter_report@outlook.com', '[' . G_VERSION . '][' . G_VERSION_BUILD . '][' . base_url() . ']' . $error_message, nl2br($exception_message), get_setting('site_name'), 'WeCenter');
+		AWS_APP::mail()->send('rubyzhu@tcl.com', '[' . G_VERSION . '][' . G_VERSION_BUILD . '][' . base_url() . ']' . $error_message, nl2br($exception_message), get_setting('site_name'), 'WeCenter');
 	}
 
 	echo _show_error($exception_message);
@@ -695,9 +700,16 @@ function fetch_salt($length = 4)
  * @param  string
  * @return string
  */
-function compile_password($password, $salt)
+function compile_password($password, $salt, $flag = 0)
 {
-	$password = md5(md5($password) . $salt);
+    if($flag == 1)
+    {
+        $password = md5($password . $salt);
+    }
+    else
+    {
+        $password = md5(md5($password) . $salt);
+    }
 
 	return $password;
 }
@@ -708,7 +720,7 @@ function compile_password($password, $salt)
  * @param  string
  * @return string
  */
-function get_js_url($url)
+function get_js_url($url, $http_flag = 0)
 {
 	if (substr($url, 0, 1) == '/')
 	{
@@ -745,7 +757,7 @@ function get_js_url($url)
 			}
 		}
 
-		$url = base_url() . '/' . ((get_setting('url_rewrite_enable') != 'Y') ? G_INDEX_SCRIPT : '') . $url;
+		$url = base_url($http_flag) . '/' . ((get_setting('url_rewrite_enable') != 'Y') ? G_INDEX_SCRIPT : '') . $url;
 	}
 
 	return $url;
@@ -783,11 +795,11 @@ function calc_page_limit($page, $per_page)
  * @param  boolean
  * @return string
  */
-function get_login_cookie_hash($user_name, $password, $salt, $uid, $hash_password = true)
+function get_login_cookie_hash($user_name, $password, $salt, $uid, $hash_password = true, $flag = 0)
 {
 	if ($hash_password)
 	{
-		$password = compile_password($password, $salt);
+            $password = compile_password($password, $salt,$flag);
 	}
 
 	$auth_hash_key = md5(G_COOKIE_HASH_KEY . $_SERVER['HTTP_USER_AGENT']);

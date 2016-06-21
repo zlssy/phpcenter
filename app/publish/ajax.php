@@ -273,19 +273,19 @@ class ajax extends AWS_CONTROLLER
     {
         if (!$question_info = $this->model('question')->get_question_info_by_id($_POST['question_id']))
         {
-            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题不存在')));
+            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子不存在')));
         }
 
         if ($question_info['lock'] AND !($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator']))
         {
-            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题已锁定, 不能编辑')));
+            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子已锁定, 不能编辑')));
         }
 
         if (!$this->user_info['permission']['is_administortar'] AND !$this->user_info['permission']['is_moderator'] AND !$this->user_info['permission']['edit_question'])
         {
             if ($question_info['published_uid'] != $this->user_id)
             {
-                H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('你没有权限编辑这个问题')));
+                H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('你没有权限编辑这个帖子')));
             }
         }
 
@@ -296,12 +296,12 @@ class ajax extends AWS_CONTROLLER
 
         if (cjk_strlen($_POST['question_content']) < 5)
         {
-            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题标题字数不得少于 5 个字')));
+            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子标题字数不得少于 5 个字')));
         }
 
         if (get_setting('question_title_limit') > 0 AND cjk_strlen($_POST['question_content']) > get_setting('question_title_limit'))
         {
-            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题标题字数不得大于') . ' ' . get_setting('question_title_limit') . ' ' . AWS_APP::lang()->_t('字节')));
+            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子标题字数不得大于') . ' ' . get_setting('question_title_limit') . ' ' . AWS_APP::lang()->_t('字节')));
         }
 
         if (!$this->user_info['permission']['publish_url'] AND FORMAT::outside_url_exists($_POST['question_detail']))
@@ -329,7 +329,7 @@ class ajax extends AWS_CONTROLLER
 
         if ($_POST['do_delete'] AND !$this->user_info['permission']['is_administortar'] AND !$this->user_info['permission']['is_moderator'])
         {
-            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('对不起, 你没有删除问题的权限')));
+            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('对不起, 你没有删除帖子的权限')));
         }
 
         if ($_POST['do_delete'])
@@ -395,7 +395,7 @@ class ajax extends AWS_CONTROLLER
     {
         if (!$this->user_info['permission']['publish_question'])
         {
-            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('你没有权限发布问题')));
+            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('你没有权限发布帖子')));
         }
 
         if ($this->user_info['integral'] < 0 AND get_setting('integral_system_enabled') == 'Y')
@@ -405,7 +405,7 @@ class ajax extends AWS_CONTROLLER
 
         if (!$_POST['question_content'])
         {
-            H::ajax_json_output(AWS_APP::RSM(null, - 1, AWS_APP::lang()->_t('请输入问题标题')));
+            H::ajax_json_output(AWS_APP::RSM(null, - 1, AWS_APP::lang()->_t('请输入帖子标题')));
         }
 
         if (get_setting('category_enable') == 'N')
@@ -415,17 +415,17 @@ class ajax extends AWS_CONTROLLER
 
         if (!$_POST['category_id'])
         {
-            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('请选择问题分类')));
+            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('请选择帖子分类')));
         }
 
         if (cjk_strlen($_POST['question_content']) < 5)
         {
-            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('问题标题字数不得少于 5 个字')));
+            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('帖子标题字数不得少于 5 个字')));
         }
 
         if (get_setting('question_title_limit') > 0 AND cjk_strlen($_POST['question_content']) > get_setting('question_title_limit'))
         {
-            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题标题字数不得大于 %s 字节', get_setting('question_title_limit'))));
+            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子标题字数不得大于 %s 字节', get_setting('question_title_limit'))));
         }
 
         if (!$this->user_info['permission']['publish_url'] AND FORMAT::outside_url_exists($_POST['question_detail']))
@@ -456,13 +456,13 @@ class ajax extends AWS_CONTROLLER
 
             if (get_setting('question_topics_limit') AND sizeof($_POST['topics']) > get_setting('question_topics_limit'))
             {
-                H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('单个问题话题数量最多为 %s 个, 请调整话题数量', get_setting('question_topics_limit'))));
+                H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('单个帖子话题数量最多为 %s 个, 请调整话题数量', get_setting('question_topics_limit'))));
             }
         }
 
         if (!$_POST['topics'] AND get_setting('new_question_force_add_topic') == 'Y')
         {
-            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('请为问题添加话题')));
+            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('请为帖子添加话题')));
         }
 
         if (!$this->model('publish')->insert_attach_is_self_upload($_POST['question_detail'], $_POST['attach_ids']))
@@ -813,7 +813,7 @@ class ajax extends AWS_CONTROLLER
     {
         if (!$question_info = $this->model('question')->get_question_info_by_id($_POST['item_id']))
         {
-            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题不存在')));
+            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子不存在')));
         }
 
         if (!$this->user_info['permission']['is_administortar'] AND !$this->user_info['permission']['is_moderator'])
@@ -838,7 +838,7 @@ class ajax extends AWS_CONTROLLER
     {
         if (!$question_info = $this->model('question')->get_question_info_by_id($_POST['item_id']))
         {
-            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('问题不存在')));
+            H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('帖子不存在')));
         }
 
         if (!$this->user_info['permission']['is_administortar'] AND !$this->user_info['permission']['is_moderator'])

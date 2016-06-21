@@ -146,7 +146,7 @@ class integral_class extends AWS_MODEL
 					if ($questions_info[$item['item_id']])
 					{
 						$result[$log_id] = array(
-							'title' => '问题: ' . $questions_info[$item['item_id']]['question_content'],
+							'title' => '帖子: ' . $questions_info[$item['item_id']]['question_content'],
 							'url' => get_js_url('/question/' . $item['item_id'])
 						);
 					}

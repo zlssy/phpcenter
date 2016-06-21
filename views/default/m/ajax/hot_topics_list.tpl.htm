@@ -9,7 +9,7 @@
 				<a href="m/topic/<?php echo $val['url_token']; ?>" class="text"><?php echo $val['topic_title']; ?></a>
 			</span>
 			<p class="color-999">
-				<?php echo cjk_substr($val['topic_description'], 0, 32, 'UTF-8', '...'); ?>
+				<?php echo cjk_substr(strip_tags(br2nl($val['topic_description'])), 0, 32, 'UTF-8', '...'); ?>
 			</p>
 		</div>
 	</div>

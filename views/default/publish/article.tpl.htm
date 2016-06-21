@@ -9,7 +9,7 @@
 					<ul class="nav nav-tabs aw-nav-tabs active">
 						<li class="active"><a href="publish/article/"><?php _e('文章'); ?></a></li>
 						<?php if ($this->user_info['permission']['publish_question']) { ?>
-						<li><a href="publish/"><?php _e('问题'); ?></a></li>
+						<li><a href="publish/"><?php _e('帖子'); ?></a></li>
 						<?php } ?>
 						<h2 class="hidden-xs"><i class="icon icon-ask"></i> <?php _e('发起'); ?></h2>
 					</ul>
@@ -50,19 +50,10 @@
 								<div class="aw-mod aw-editor-box">
 									<div class="mod-head">
 										<div class="wmd-panel">
-											<textarea class="wmd-input form-control autosize editor" id="wmd-input" rows="15" name="message"><?php echo $this->article_info['message']; ?></textarea>
+											<textarea id="wmd-input" name="message" style="width:693px;height:420px;"><?php echo $this->article_info['message']; ?></textarea>
 								        </div>
 									</div>
-									<div class="mod-body">
-										<p class="text-color-999"><span class="pull-right" id="question_detail_message">&nbsp;</span></p>
-										<?php if (get_setting('upload_enable') == 'Y' AND get_setting('advanced_editor_enable' == 'Y')) { ?>
-										<div class="aw-upload-box">
-											<a class="btn btn-default">上传附件</a>
-											<div class="upload-container"></div>
-											<span class="text-color-999 aw-upload-tips hidden-xs"><?php _e('允许的附件文件类型'); ?>: <?php echo get_setting('allowed_upload_types'); ?></span>
-										</div>
-										<?php } ?>
-									</div>
+									
 								</div>
 
 								<h3><?php _e('添加话题'); ?>:</h3>
@@ -81,8 +72,8 @@
 										<?php if ($_POST['topics']) { ?>
 										<?php foreach ($_POST['topics'] AS $key => $val) { ?>
 										<span class="topic-tag">
-											<a class="text"><?php echo $val; ?></a>
-											<input type="hidden" value="<?php echo $val; ?>" name="topics[]" />
+											<a class="text"><?php echo htmlspecialchars($val); ?></a>
+											<input type="hidden" value="<?php echo htmlspecialchars($val); ?>" name="topics[]" />
 										</span>
 										<?php } ?>
 										<?php } else if ($this->article_topics) { ?>

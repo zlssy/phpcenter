@@ -154,11 +154,11 @@ class publish_class extends AWS_MODEL
 
 		if ($question_info['published_uid'] != $uid)
 		{
-			$this->model('integral')->process($uid, 'ANSWER_QUESTION', get_setting('integral_system_config_new_answer'), '回答问题 #' . $question_id, $question_id);
+			$this->model('integral')->process($uid, 'ANSWER_QUESTION', get_setting('integral_system_config_new_answer'), '回复帖子 #' . $question_id, $question_id);
 
 			if (get_setting('integral_system_config_answer_change_source') == 'Y' AND get_setting('integral_system_config_new_answer') <= 0)
 			{
-				$this->model('integral')->process($question_info['published_uid'], 'QUESTION_ANSWER', -get_setting('integral_system_config_new_answer'), '问题被回答 #' . $question_id, $question_id);
+				$this->model('integral')->process($question_info['published_uid'], 'QUESTION_ANSWER', -get_setting('integral_system_config_new_answer'), '帖子被回复 #' . $question_id, $question_id);
 			}
 		}
 
@@ -200,7 +200,7 @@ class publish_class extends AWS_MODEL
 
 			if ($weixin_user_info['weixin_settings']['NEW_ANSWER'] != 'N')
 			{
-				$this->model('weixin')->send_text_message($weixin_user['openid'], "您的问题 [" . $question_info['question_content'] . "] 收到了新的回答:\n\n" . strip_tags($answer_content), $this->model('openid_weixin_weixin')->redirect_url('/m/question/' . $question_id));
+				$this->model('weixin')->send_text_message($weixin_user['openid'], "您的帖子 [" . $question_info['question_content'] . "] 收到了新的回答:\n\n" . strip_tags($answer_content), $this->model('openid_weixin_weixin')->redirect_url('/m/question/' . $question_id));
 			}
 		}
 
@@ -297,7 +297,7 @@ class publish_class extends AWS_MODEL
 			// 记录日志
 			ACTION_LOG::save_action($uid, $question_id, ACTION_LOG::CATEGORY_QUESTION, ACTION_LOG::ADD_QUESTION, $question_content, $question_detail, 0, intval($anonymous));
 
-			$this->model('integral')->process($uid, 'NEW_QUESTION', get_setting('integral_system_config_new_question'), '发起问题 #' . $question_id, $question_id);
+			$this->model('integral')->process($uid, 'NEW_QUESTION', get_setting('integral_system_config_new_question'), '发起帖子 #' . $question_id, $question_id);
 
 			$this->model('posts')->set_posts_index($question_id, 'question');
 
@@ -325,7 +325,7 @@ class publish_class extends AWS_MODEL
 		if ($article_id = $this->insert('article', array(
 			'uid' => intval($uid),
 			'title' => htmlspecialchars($title),
-			'message' => htmlspecialchars($message),
+			'message' => html_purify($message),
 			'category_id' => intval($category_id),
 			'add_time' => time()
 		)))

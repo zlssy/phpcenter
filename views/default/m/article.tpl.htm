@@ -2,7 +2,7 @@
 
 <!-- 内容 -->
 	<div class="container padding-0">
-		<!-- 话题bar -->
+		<!-- 标签bar -->
 		<div class="aw-topic-bar clearfix" data-id="<?php echo $this->article_info['id']; ?>" data-type="article">
 			<div class="tag-bar">
 				<?php foreach($this->article_topics as $key => $val) { if ($key > 2) { break; } ?>
@@ -15,7 +15,7 @@
 				<?php } ?>
 			</div>
 		</div>
-		<!-- end 话题bar -->
+		<!-- end 标签bar -->
 
 		<!-- 文章详情 -->
 		<div class="aw-question-detail aw-article-detail">
@@ -56,8 +56,10 @@
 				</span>
 				<span class="aw-article-vote operate <?php if (!$this->user_id OR $this->user_id == $this->article_info['uid']) { ?> disabled<?php } ?>">
 					<a class="agree" <?php if ($this->user_id AND $this->user_id != $this->article_info['uid']) { ?>onclick="AWS.User.article_vote($(this), <?php echo $this->article_info['id']; ?>, 1);"<?php } ?>><i class="icon icon-agree <?php if ($this->article_info['vote_info']['rating'] == 1) { ?> active<?php } ?>"></i> <b><?php echo $this->article_info['votes']; ?></b></a>
-					<a class="disagree" <?php if ($this->user_id AND $this->user_id != $this->article_info['uid']) { ?>onclick="AWS.User.article_vote($(this), <?php echo $this->article_info['id']; ?>, -1);"<?php } ?>><i class="icon icon-disagree <?php if ($this->article_info['vote_info']['rating'] == -1) { ?> active<?php } ?>"></i></a>
-					<a onclick="AWS.User.favorite('article', <?php echo $this->article_info['id']; ?>);">
+					<?php if(0){ ?>
+                    <a class="disagree" <?php if ($this->user_id AND $this->user_id != $this->article_info['uid']) { ?>onclick="AWS.User.article_vote($(this), <?php echo $this->article_info['id']; ?>, -1);"<?php } ?>><i class="icon icon-disagree <?php if ($this->article_info['vote_info']['rating'] == -1) { ?> active<?php } ?>"></i></a>
+					<?php } ?>
+                    <a onclick="AWS.User.favorite('article', <?php echo $this->article_info['id']; ?>);">
 						<i class="icon icon-favor"></i>
 					</a>
 				</span>
@@ -123,29 +125,34 @@
 		<?php if ($this->article_info['lock']) { ?>
 		<p align="center"><?php _e('该文章目前已经被锁定, 无法添加新评论'); ?></p>
 		<?php } else if (!$this->user_id) { ?>
-		<a class="aw-load-more" id="load_index_actions" href="account/login/"><?php _e('登录进行回复'); ?></a>
+		<a class="aw-load-more" id="load_index_actions" href="m/login/"><?php _e('登录进行回复'); ?></a>
 		<?php } else { ?>
 		<!-- 回复box -->
-		<div class="aw-replay-box article">
-			<form action="article/ajax/save_comment/" onsubmit="return false;" method="post" id="answer_form">
-				<input type="hidden" name="post_hash" value="<?php echo new_post_hash(); ?>" />
-			    <input type="hidden" name="article_id" value="<?php echo $this->article_info['id']; ?>" />
-				<div class="mod-head">
-					<a href="m/people/"><img width="20" class="img" src="<?php echo get_avatar_url($this->user_id, 'mid'); ?>" alt="" /></a> <?php echo $this->user_info['user_name']; ?>
-				</div>
-				<div class="mod-body">
-					<textarea class="form-control autosize" rows="5" name="message"></textarea>
-				</div>
-				<div class="mod-footer clearfix">
-					<a class="btn btn-success btn-normal pull-right" onclick="AWS.ajax_post($('#answer_form'), AWS.ajax_processer, 'reply');"><?php _e('回复'); ?></a>
-					<?php if ($this->human_valid) { ?>
-					<div class="captcha pull-right clearfix">
-						<input type="text" class="form-control" name="seccode_verify" placeholder="<?php _e('验证码'); ?>" />
-						<img src="" class="img" onclick="this.src = G_BASE_URL + '/account/captcha/' + Math.floor(Math.random() * 10000);" id="captcha" />
+		<div class="top_smile_box need_move" style="width:100%">
+			<div class="aw-replay-box article">
+				<form action="article/ajax/save_comment/" onsubmit="return false;" method="post" id="answer_form">
+					<input type="hidden" name="post_hash" value="<?php echo new_post_hash(); ?>" />
+					<input type="hidden" name="article_id" value="<?php echo $this->article_info['id']; ?>" />
+					<div class="mod-head">
+						<a href="m/people/"><img width="20" class="img" src="<?php echo get_avatar_url($this->user_id, 'mid'); ?>" alt="" /></a> <?php echo $this->user_info['user_name']; ?>
 					</div>
-					<?php } ?>
-				</div>
-			</form>
+					<div class="mod-body">
+						<textarea class="form-control autosize" rows="5" name="message"></textarea>
+					</div>
+					<div class="mod-footer clearfix">
+						<div class="extra_btn_wrap">
+							<a class="smile_wrap smile_control" href="javascript:;">表情</a>
+						</div>
+						<a class="btn btn-success btn-normal pull-right" onclick="AWS.ajax_post($('#answer_form'), AWS.ajax_processer, 'reply');"><?php _e('回复'); ?></a>
+						<?php if ($this->human_valid) { ?>
+						<div class="captcha pull-right clearfix extra_btn_wrap">
+							<input type="text" class="form-control" name="seccode_verify" placeholder="<?php _e('验证码'); ?>" />
+							<img src="" class="img" onclick="this.src = G_BASE_URL + '/account/captcha/' + Math.floor(Math.random() * 10000);" id="captcha" />
+						</div>
+						<?php } ?>
+					</div>
+				</form>
+			</div>
 		</div>
 		<!-- end 回复box -->
 		<?php } ?>

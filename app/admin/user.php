@@ -200,6 +200,8 @@ class user extends AWS_ADMIN_CONTROLLER
             H::redirect_msg(AWS_APP::lang()->_t('你没有权限编辑管理员账号'), '/admin/user/list/');
         }
 
+        TPL::import_js('js/md5.js');
+
         TPL::assign('job_list', $this->model('work')->get_jobs_list());
         TPL::assign('mem_group', $this->model('account')->get_user_group_by_id($user['reputation_group']));
         TPL::assign('system_group', $this->model('account')->get_user_group_list(0));

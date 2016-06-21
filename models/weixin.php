@@ -354,7 +354,7 @@ class weixin_class extends AWS_MODEL
                 }
                 else
                 {
-                    $response_message = '你的附近暂时没有问题';
+                    $response_message = '你的附近暂时没有帖子';
                 }
 
                 break;
@@ -425,7 +425,7 @@ class weixin_class extends AWS_MODEL
                 {
                     if (!$response_message = $this->create_response_by_reply_rule_keyword($this->account_info['weixin_no_result_message_key']))
                     {
-                        $response_message = '您的问题: ' . $input_message['content'] . ', 目前没有人提到过, <a href="' . $this->model('openid_weixin_weixin')->redirect_url('/m/publish/') . '">点此提问</a>';
+                        $response_message = '您的帖子: ' . $input_message['content'] . ', 目前没有人提到过, <a href="' . $this->model('openid_weixin_weixin')->redirect_url('/m/publish/') . '">点此提问</a>';
                     }
                 }
 
@@ -687,7 +687,7 @@ class weixin_class extends AWS_MODEL
                 }
                 else
                 {
-                    $response_message = '暂无问题';
+                    $response_message = '暂无帖子';
                 }
 
                 break;
@@ -753,7 +753,7 @@ class weixin_class extends AWS_MODEL
                 }
                 else
                 {
-                    $response_message = '暂无问题';
+                    $response_message = '暂无帖子';
                 }
 
 
@@ -886,7 +886,7 @@ class weixin_class extends AWS_MODEL
                 }
                 else
                 {
-                    $response_message = '暂无问题';
+                    $response_message = '暂无帖子';
                 }
 
                 break;
@@ -952,7 +952,7 @@ class weixin_class extends AWS_MODEL
                 }
                 else
                 {
-                    $response_message = '暂无问题';
+                    $response_message = '暂无帖子';
                 }
 
                 break;

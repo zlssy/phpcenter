@@ -1,0 +1,135 @@
+<?php TPL::output('global/header.tpl.htm'); ?>
+<div class="aw-container-wrap">
+    <div class="container questionnaireReport" style="display: block;">
+        <div class="row">
+            <div class="aw-content-wrap clearfix">
+                <div class="aw-topic-bar clearfix">
+                    <!-- <a href="q/" class="btn btn-normal btn-default">所有问卷</a> -->
+                    <a href="q/my/" class="btn btn-normal btn-default">我的问卷</a>
+                    <span class="pull-right">
+                        <a id="down_excel" href="q/ajax/download/?sn=<?php echo $_GET['id']?>" class="btn btn-info">导出Excel</a>
+                        <a href="q/add/" class="btn btn-normal btn-success">创建新问卷</a>
+                    </span>
+                </div>
+                <div class="results">
+                    <div id="wrap" class="wrap">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script id="qTemplate" type="text/template">
+    <div class="title">
+        <h2>
+            <div class="title_content"><%-data.title%></div>
+        </h2>
+    </div>
+    <div class="report">
+        <div class="cat-containers">
+            <div class="wrap">
+            <%_.each(data.content,function(_q,i,q_arr){
+                var subtotal = 0
+                    ,count = data.count;
+                    /*,count = _.reduce(_q.field_options.options, function(memo, item){ return memo + item.amount;}, 0);*/
+            %>
+                <h5><%- (i+1) + '. ' +_q.label + ' ['+ types[_q.field_type] + ' ' + (_q.required ? '必答题' : '选答题') +']'%></h5>
+                <div style="overflow:auto;">
+                <% if(_q.field_type == "text" || _q.field_type == "mutitext") {%>
+                <table class="table table table-bordered">
+                    <thead>
+                        <tr>
+                            <td style="width:32px;">编号</td>
+                            <td>文本答案</td>
+                            <td style="width:20%;">提交时间</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <%_.each(_q.field_options.options, function(n,m,all) {
+                            var amount = n.amount, rate = (amount/count * 100).toFixed(2);
+                            rate = isNaN(rate) ? 0 : rate;
+                            subtotal += amount;
+                        %>
+                        <tr>
+                            <td><%- m+1%></td>
+                            <td><pre><%- n.result%></pre></td>
+                            <td><%- n.time%></td>
+                        </tr>
+                        <%});%>
+                    </tbody>
+                </table>
+
+                <%}else if(_q.field_type != "singleMatrix" && _q.field_type != "mutiMatrix"){ %>
+                <table class="table table table-bordered">
+                    <thead>
+                        <tr>
+                            <td>选项</td>
+                            <td class="td-count">小计</td>
+                            <td>比例</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <%_.each(_q.field_options.options, function(n,m,all) {
+                            var amount = n.amount, rate = (amount/count * 100).toFixed(2);
+                            rate = isNaN(rate) ? 0 : rate;
+                            subtotal += amount;
+                        %>
+                        <tr class="">
+                            <td><%if(n.uri){%><a class="rate_imgshow" <%='href="'+n.uri+'"'%> target="_blank" rel="<%-_q.cid%>" title="<%-n.label%>"><img src="<%=n.thumb || n.uri%>" alt="<%-n.label%>"></a> <%}%><%-n.label%></td>
+                            <td><%-amount%></td>
+                            <td class="rate">
+                                <label>
+                                    <span style="width:<%=rate%>%"></span> <em><%=rate%>%</em>
+                                </label>
+                            </td>
+                        </tr>
+                        <%});%>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>本题有效填写数</td>
+                            <td><%=count%></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <%
+                }else{
+                    colsleng = _q.field_options.cols.length;
+                %>
+                <table class="table table table-bordered">
+                    <thead>
+                        <tr>
+                            <td><em>题目\选项</em></td>
+                            <%_.each(_q.field_options.cols, function(v,i,all){%>
+                            <td><%-v.label%></td>
+                            <%})%>
+                            <td style="width:65px;"><em>有效填写数</em></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <%_.each(_q.field_options.options, function(v,i,all) {
+                            var n_amount = _.reduce(v.items, function(memo, item){ return (memo + item.amount);}, 0);
+                            console.log(n_amount);
+                        %>
+                        <tr>
+                            <td><%=v.label%></td>
+                            <%for(var n=0; n<colsleng; n++) { var item = v.items[n];%>
+                            <%if(item){%>
+                            <td><%-n_amount > 0 ? item.amount+' ('+(item.amount/n_amount * 100).toFixed(2)+'%)' : item.amount%></td>
+                            <%}else{%><td></td><%}%>
+                            <%}%>
+                            <td><%=n_amount%></td>
+                        </tr>
+                        <%})%>
+                    </tbody>
+                </table>
+                <%}%>
+                </div>
+            <%})%>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/javascript">var QID = "<?php echo $_GET['id']?>"</script>
+<?php TPL::output('global/footer.tpl.htm'); ?>

@@ -37,6 +37,9 @@ class main extends AWS_CONTROLLER
 
 	public function index_action()
 	{
+
+        $_GET['uid'] = htmlspecialchars($_GET['uid']);
+
 		if ($_GET['notification_id'])
 		{
 			$this->model('notify')->read_notification($_GET['notification_id'], $this->user_id);
@@ -56,7 +59,7 @@ class main extends AWS_CONTROLLER
 		{
 			header('HTTP/1.1 404 Not Found');
 
-			H::redirect_msg(AWS_APP::lang()->_t('问题不存在或已被删除'), '/question/');
+			H::redirect_msg(AWS_APP::lang()->_t('帖子不存在或已被删除'), '/question/');
 		}
 
 		if (! $_GET['sort'] or $_GET['sort'] != 'ASC')
@@ -84,7 +87,7 @@ class main extends AWS_CONTROLLER
 		{
 			if ($from_question = $this->model('question')->get_question_info_by_id($_GET['rf']))
 			{
-				$redirect_message[] = AWS_APP::lang()->_t('从问题 %s 跳转而来', '<a href="' . get_js_url('/question/' . $_GET['rf'] . '?rf=false') . '">' . $from_question['question_content'] . '</a>');
+				$redirect_message[] = AWS_APP::lang()->_t('从帖子 %s 跳转而来', '<a href="' . get_js_url('/question/' . $_GET['rf'] . '?rf=false') . '">' . $from_question['question_content'] . '</a>');
 			}
 		}
 
@@ -96,14 +99,14 @@ class main extends AWS_CONTROLLER
 			}
 			else
 			{
-				$redirect_message[] = AWS_APP::lang()->_t('重定向目标问题已被删除, 将不再重定向问题');
+				$redirect_message[] = AWS_APP::lang()->_t('重定向目标帖子已被删除, 将不再重定向帖子');
 			}
 		}
 		else if ($question_info['redirect'])
 		{
 			if ($target_question)
 			{
-				$message = AWS_APP::lang()->_t('此问题将跳转至') . ' <a href="' . get_js_url('/question/' . $question_info['redirect']['target_id'] . '?rf=' . $question_info['question_id']) . '">' . $target_question['question_content'] . '</a>';
+				$message = AWS_APP::lang()->_t('此帖子将跳转至') . ' <a href="' . get_js_url('/question/' . $question_info['redirect']['target_id'] . '?rf=' . $question_info['question_id']) . '">' . $target_question['question_content'] . '</a>';
 
 				if ($this->user_id AND ($this->user_info['permission']['is_administortar'] OR $this->user_info['permission']['is_moderator'] OR (!$this->question_info['lock'] AND $this->user_info['permission']['redirect_question'])))
 				{
@@ -114,7 +117,7 @@ class main extends AWS_CONTROLLER
 			}
 			else
 			{
-				$redirect_message[] = AWS_APP::lang()->_t('重定向目标问题已被删除, 将不再重定向问题');
+				$redirect_message[] = AWS_APP::lang()->_t('重定向目标帖子已被删除, 将不再重定向帖子');
 			}
 		}
 
@@ -160,14 +163,14 @@ class main extends AWS_CONTROLLER
 				$answer_count_where = 'uid IN(' . implode($follow_uids, ',') . ')';
 				$answer_order_by = 'add_time ASC';
 			}
-			else if ($_GET['sort_key'] == 'add_time')
-			{
-				$answer_order_by = $_GET['sort_key'] . " " . $_GET['sort'];
-			}
-			else
-			{
-				$answer_order_by = "agree_count " . $_GET['sort'] . ", against_count ASC, add_time ASC";
-			}
+            else if ($_GET['sort_key'] == 'agree_count')
+            {
+                $answer_order_by = "agree_count " . $_GET['sort'] . ", against_count ASC, add_time ASC";
+            }
+            else
+            {
+                $answer_order_by = "add_time " . $_GET['sort'];
+            }
 
 			if ($answer_count_where)
 			{
@@ -303,7 +306,8 @@ class main extends AWS_CONTROLLER
 			}
 		}
 
-		$question_info['question_detail'] = FORMAT::parse_attachs(nl2br(FORMAT::parse_bbcode($question_info['question_detail'])));
+		$question_detail = $question_info['question_detail'];
+		$question_info['question_detail'] = replace_old_new_img_url($question_detail);
 
 		TPL::assign('question_info', $question_info);
 		TPL::assign('question_focus', $this->model('question')->has_focus_question($question_info['question_id'], $this->user_id));
@@ -365,7 +369,7 @@ class main extends AWS_CONTROLLER
 			if ($this->user_id)
 			{
 				TPL::assign('pagination', AWS_APP::pagination()->initialize(array(
-					'base_url' => get_js_url('/question/id-' . $question_info['question_id'] . '__sort_key-' . $_GET['sort_key'] . '__sort-' . $_GET['sort'] . '__uid-' . $_GET['uid']),
+					'base_url' => get_js_url('/question/id-' . $question_info['question_id'] . '__sort_key-' . $_GET['sort_key'] . '__sort-' . $_GET['sort'] . '__uid-' . intval($_GET['uid'])),
 					'total_rows' => $answer_count,
 					'per_page' => 100
 				))->create_links());
@@ -412,7 +416,7 @@ class main extends AWS_CONTROLLER
 
 	public function index_square_action()
 	{
-		$this->crumb(AWS_APP::lang()->_t('问题'), '/question/');
+		$this->crumb(AWS_APP::lang()->_t('帖子'), '/question/');
 
 		// 导航
 		if (TPL::is_output('block/content_nav_menu.tpl.htm', 'question/square'))
@@ -432,7 +436,7 @@ class main extends AWS_CONTROLLER
 			TPL::assign('sidebar_hot_users', $this->model('module')->sidebar_hot_users($this->user_id, 5));
 		}
 
-		//边栏热门话题
+		//边栏热门标签
 		if (TPL::is_output('block/sidebar_hot_topics.tpl.htm', 'question/square'))
 		{
 			TPL::assign('sidebar_hot_topics', $this->model('module')->sidebar_hot_topics($_GET['category']));
@@ -525,7 +529,7 @@ class main extends AWS_CONTROLLER
 	{
 		if (! $question_info = $this->model('question')->get_question_info_by_id($_GET['question_id']) or ! $_GET['log_id'])
 		{
-			H::redirect_msg(AWS_APP::lang()->_t('问题不存在'), '/');
+			H::redirect_msg(AWS_APP::lang()->_t('帖子不存在'), '/');
 		}
 
 		if (($question_info['published_uid'] != $this->user_id) AND (! $this->user_info['permission']['is_administortar']) AND (! $this->user_info['permission']['is_moderator']))
@@ -542,7 +546,7 @@ class main extends AWS_CONTROLLER
 	{
 		if (! $question_info = $this->model('question')->get_question_info_by_id($_GET['question_id']) or ! $_GET['log_id'])
 		{
-			H::redirect_msg(AWS_APP::lang()->_t('问题不存在'), '/');
+			H::redirect_msg(AWS_APP::lang()->_t('帖子不存在'), '/');
 		}
 
 		if (($question_info['published_uid'] != $this->user_id) AND (! $this->user_info['permission']['is_administortar']) AND (! $this->user_info['permission']['is_moderator']))

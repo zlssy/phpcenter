@@ -175,12 +175,19 @@ class core_upload {
 
                 switch($error)
                 {
+                    /*
                     case 1: // UPLOAD_ERR_INI_SIZE
                         $this->set_error('upload_file_exceeds_limit');
                         break;
                     case 2: // UPLOAD_ERR_FORM_SIZE
                         $this->set_error('upload_file_exceeds_form_limit');
                         break;
+                    */
+                    case 1:
+                    case 2:
+                        $this->set_error("上传的文件大小超出了服务器的限制,请和管理员沟通");
+                        break;
+
                     case 3: // UPLOAD_ERR_PARTIAL
                         $this->set_error('upload_file_partial');
                         break;

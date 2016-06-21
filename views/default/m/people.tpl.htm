@@ -25,10 +25,6 @@
 		<div class="mod-body clearfix">
 			<ul>
 				<li>
-					<b><?php echo $this->user['reputation']; ?></b>
-					<?php _e('威望')?>
-				</li>
-				<li>
 					<b><?php echo $this->user['integral']; ?></b>
 					<?php _e('积分')?>
 				</li>
@@ -74,7 +70,7 @@
 										<a href="<?php echo $val['link']; ?>"><?php echo $val['title']; ?></a>
 									</h2>
 									<p>
-										<?php echo cjk_substr($val['answer_info']['answer_content'], 0, 130, 'UTF-8', '...'); ?>
+										<?php echo cjk_substr(strip_tags(br2nl($val['answer_info']['answer_content'])), 0, 130, 'UTF-8', '...'); ?>
 									</p>
 								</div>
 								<div class="mod-footer active">
@@ -159,7 +155,7 @@
 	            <?php } ?>
 				<!-- end 关注者 -->
 
-				<!-- 关注话题 -->
+				<!-- 关注标签 -->
 				<?php if ($this->focus_topics) { ?>
 				<div class="mod card-mod focus-topics">
 					<div class="mod-head">
@@ -174,7 +170,7 @@
 					</div>
 				</div>
 				<?php } ?>
-				<!-- end 关注话题 -->
+				<!-- end 关注标签 -->
 			</div>
 			<!-- end 关注列表 -->
 

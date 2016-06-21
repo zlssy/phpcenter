@@ -78,7 +78,7 @@ $config[] = array(
     'children' => array(
         array(
             'id' => 301,
-            'title' => AWS_APP::lang()->_t('问题管理'),
+            'title' => AWS_APP::lang()->_t('帖子管理'),
             'url' => 'admin/question/question_list/'
         ),
 

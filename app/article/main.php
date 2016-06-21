@@ -35,6 +35,9 @@ class main extends AWS_CONTROLLER
 
 	public function index_action()
 	{
+        $_GET['id'] = intval($_GET['id']);
+        $_GET['page'] = intval($_GET['page']);
+
 		if ($_GET['notification_id'])
 		{
 			$this->model('notify')->read_notification($_GET['notification_id'], $this->user_id);
@@ -61,7 +64,7 @@ class main extends AWS_CONTROLLER
 
 		$article_info['user_info'] = $this->model('account')->get_user_info_by_uid($article_info['uid'], true);
 
-		$article_info['message'] = FORMAT::parse_attachs(nl2br(FORMAT::parse_bbcode($article_info['message'])));
+		$article_info['message'] = replace_old_new_img_url($article_info['message']);
 
 		if ($this->user_id)
 		{
@@ -220,7 +223,7 @@ class main extends AWS_CONTROLLER
 			TPL::assign('content_nav_menu', $this->model('menu')->get_nav_menu_list('article'));
 		}
 
-		//边栏热门话题
+		//边栏热门标签
 		if (TPL::is_output('block/sidebar_hot_topics.tpl.htm', 'article/square'))
 		{
 			TPL::assign('sidebar_hot_topics', $this->model('module')->sidebar_hot_topics($category_info['id']));
@@ -248,7 +251,7 @@ class main extends AWS_CONTROLLER
 		TPL::assign('hot_articles', $this->model('article')->get_articles_list(null, 1, 10, 'votes DESC', 30));
 
 		TPL::assign('pagination', AWS_APP::pagination()->initialize(array(
-			'base_url' => get_js_url('/article/category_id-' . $_GET['category_id'] . '__feature_id-' . $_GET['feature_id']),
+			'base_url' => get_js_url('/article/category_id-' . intval($_GET['category_id']) . '__feature_id-' . intval($_GET['feature_id'])),
 			'total_rows' => $article_list_total,
 			'per_page' => get_setting('contents_per_page')
 		))->create_links());

@@ -38,17 +38,17 @@ class main extends AWS_CONTROLLER
 		{
 			if (!$question_info = $this->model('question')->get_question_info_by_id($_GET['id']))
 			{
-				H::redirect_msg(AWS_APP::lang()->_t('指定问题不存在'));
+				H::redirect_msg(AWS_APP::lang()->_t('指定帖子不存在'));
 			}
 
 			if (!$this->user_info['permission']['is_administortar'] AND !$this->user_info['permission']['is_moderator'] AND !$this->user_info['permission']['edit_question'] AND $question_info['published_uid'] != $this->user_id)
 			{
-				H::redirect_msg(AWS_APP::lang()->_t('你没有权限编辑这个问题'), '/question/' . $question_info['question_id']);
+				H::redirect_msg(AWS_APP::lang()->_t('你没有权限编辑这个帖子'), '/question/' . $question_info['question_id']);
 			}
 		}
 		else if (!$this->user_info['permission']['publish_question'])
 		{
-			H::redirect_msg(AWS_APP::lang()->_t('你所在用户组没有权限发布问题'));
+			H::redirect_msg(AWS_APP::lang()->_t('你所在用户组没有权限发布帖子'));
 		}
 		else if ($this->is_post() AND $_POST['question_detail'])
 		{

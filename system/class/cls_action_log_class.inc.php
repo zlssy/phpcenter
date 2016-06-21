@@ -14,7 +14,7 @@
 
 class ACTION_LOG
 {
-	const CATEGORY_QUESTION = 1;	// 问题
+	const CATEGORY_QUESTION = 1;	// 帖子
 
 	const CATEGORY_ANSWER = 2;	// 回答
 
@@ -23,29 +23,29 @@ class ACTION_LOG
 	const CATEGORY_TOPIC = 4;	// 话题
 
 
-	const ADD_QUESTION = 101;	// 添加问题
+	const ADD_QUESTION = 101;	// 添加帖子
 
-	const MOD_QUESTION_TITLE = 102;	// 修改问题标题
+	const MOD_QUESTION_TITLE = 102;	// 修改帖子标题
 
-	const MOD_QUESTION_DESCRI = 103;	// 修改问题描述
+	const MOD_QUESTION_DESCRI = 103;	// 修改帖子描述
 
-	const ADD_REQUESTION_FOCUS = 105;	// 添加问题关注
+	const ADD_REQUESTION_FOCUS = 105;	// 添加帖子关注
 
-	const REDIRECT_QUESTION = 107;	// 问题重定向
+	const REDIRECT_QUESTION = 107;	// 帖子重定向
 
-	const MOD_QUESTION_CATEGORY = 108;	// 修改问题分类
+	const MOD_QUESTION_CATEGORY = 108;	// 修改帖子分类
 
-	const MOD_QUESTION_ATTACH = 109;	// 修改问题附件
+	const MOD_QUESTION_ATTACH = 109;	// 修改帖子附件
 
-	const DEL_REDIRECT_QUESTION = 110;	// 删除问题重定向
+	const DEL_REDIRECT_QUESTION = 110;	// 删除帖子重定向
 
-	const ANSWER_QUESTION = 201;	// 回复问题
+	const ANSWER_QUESTION = 201;	// 回复帖子
 
 	const ADD_AGREE = 204;	// 增加赞同
 
 	const ADD_USEFUL = 206;	// 加感谢作者
 
-	const ADD_UNUSEFUL = 207;	// 问题没有帮助
+	const ADD_UNUSEFUL = 207;	// 帖子没有帮助
 
 	const ADD_TOPIC = 401;	// 创建话题
 
@@ -72,6 +72,12 @@ class ACTION_LOG
 	const ADD_LIKE_PROJECT = 701;	// 喜欢活动
 
 	const ADD_SUPPORT_PROJECT = 702;	// 参加活动
+
+	private static $_no_html_encode = array(
+		self::ADD_QUESTION => 1,
+		self::MOD_QUESTION_DESCRI => 1,
+		self::ADD_ARTICLE => 1,
+	);
 
 	public static function associate_fresh_action($history_id, $associate_id, $associate_type, $associate_action, $uid, $anonymous, $add_time)
 	{
@@ -135,10 +141,12 @@ class ACTION_LOG
 			'anonymous' => intval($anonymous),
 		));
 
+		$encode_action_content = isset(self::$_no_html_encode[$action_id]) ? html_purify($action_content) : htmlspecialchars($action_content);
+		$encode_action_attch_update = isset(self::$_no_html_encode[$action_id]) ? html_purify($action_attch_update) : htmlspecialchars($action_attch_update);
 		AWS_APP::model()->insert('user_action_history_data', array(
 			'history_id' => $history_id,
-			'associate_content' => htmlspecialchars($action_content),
-			'associate_attached' => htmlspecialchars($action_attch_update),
+			'associate_content' => $encode_action_content,
+			'associate_attached' => $encode_action_attch_update,
 			'addon_data' => $addon_data ? serialize($addon_data) : '',
 		));
 
@@ -356,30 +364,30 @@ class ACTION_LOG
 			case self::ADD_QUESTION:
 				if ($associate_topic_info)
 				{
-					$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> 在 <a href="' . $topic_url . '" ' . $topic_link_attr . '>' . $associate_topic_info['topic_title'] . '</a> ' . AWS_APP::lang()->_t('话题发起了一个问题');
+					$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> 在 <a href="' . $topic_url . '" ' . $topic_link_attr . '>' . $associate_topic_info['topic_title'] . '</a> ' . AWS_APP::lang()->_t('话题发起了一个帖子');
 				}
 				else if ($associate_question_info['anonymous'])
 				{
-					$action_string = AWS_APP::lang()->_t('匿名用户') . ' ' . AWS_APP::lang()->_t('发起了问题');
+					$action_string = AWS_APP::lang()->_t('匿名用户') . ' ' . AWS_APP::lang()->_t('发起了帖子');
 				}
 				else
 				{
-					$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> ' . AWS_APP::lang()->_t('发起了问题');
+					$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> ' . AWS_APP::lang()->_t('发起了帖子');
 				}
 				break;
 
 			case self::ADD_REQUESTION_FOCUS:
-				$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> ' . AWS_APP::lang()->_t('关注了该问题');;
+				$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> ' . AWS_APP::lang()->_t('关注了该帖子');;
 				break;
 
 			case self::ANSWER_QUESTION:
 				if ($associate_topic_info)
 				{
-					$action_string = '<a href="' . $topic_url . '" ' . $topic_link_attr . '>' . $associate_topic_info['topic_title'] . '</a> ' . AWS_APP::lang()->_t('话题新增了一个回答');
+					$action_string = '<a href="' . $topic_url . '" ' . $topic_link_attr . '>' . $associate_topic_info['topic_title'] . '</a> ' . AWS_APP::lang()->_t('话题新增了一个回复');
 				}
 				else
 				{
-					$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> ' . AWS_APP::lang()->_t('回答了问题');
+					$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> ' . AWS_APP::lang()->_t('回复了帖子');
 				}
 				break;
 
@@ -403,7 +411,7 @@ class ACTION_LOG
 				{
 					if (isset($associate_topic_info[0]))
 					{
-						$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> ' . AWS_APP::lang()->_t('将该问题添加到');
+						$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> ' . AWS_APP::lang()->_t('将该帖子添加到');
 
 						foreach ($associate_topic_info as $key => $val)
 						{
@@ -431,7 +439,7 @@ class ACTION_LOG
 					}
 					else
 					{
-						$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> ' . AWS_APP::lang()->_t('将该问题添加到') . ' <a href="' . $topic_url . '" ' . $topic_link_attr . '>' . $associate_topic_info['topic_title'] . '</a> ' . AWS_APP::lang()->_t('话题');
+						$action_string = '<a href="' . $user_profile_url . '" ' . $user_link_attr . '>' . $user_name . '</a> ' . AWS_APP::lang()->_t('将该帖子添加到') . ' <a href="' . $topic_url . '" ' . $topic_link_attr . '>' . $associate_topic_info['topic_title'] . '</a> ' . AWS_APP::lang()->_t('话题');
 					}
 				}
 				else

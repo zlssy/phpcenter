@@ -86,6 +86,7 @@ class main extends AWS_CONTROLLER
 
 	public function login_action()
 	{
+
 		$url = base64_decode($_GET['url']);
 
 		if ($this->user_id)
@@ -99,6 +100,10 @@ class main extends AWS_CONTROLLER
 				HTTP::redirect('/');
 			}
 		}
+        else
+        {
+            AWS_APP::mustHttps();
+        }
 
 		if (is_mobile())
 		{
@@ -107,13 +112,11 @@ class main extends AWS_CONTROLLER
 
 		$this->crumb(AWS_APP::lang()->_t('登录'), '/account/login/');
 
-		TPL::import_css('css/login.css');
+		TPL::import_css(array('css/login.css','css/emailAutoComplete.css'));
 
 		// md5 password...
-		if (get_setting('ucenter_enabled') != 'Y')
-		{
-			TPL::import_js('js/md5.js');
-		}
+
+		TPL::import_js(array('js/md5.js','js/emailAutoComplete.js' ));
 		
 		if ($_GET['url'])
 		{
@@ -128,6 +131,111 @@ class main extends AWS_CONTROLLER
 
 		TPL::output("account/login");
 	}
+
+    public function newlogin_action(){
+
+        $tcl = AWS_APP::config()->get('system')->tcllogin;
+
+        if($tcl['Open'] == 0 )
+        {
+            HTTP::redirect('/');
+        }
+        $url = base64_decode($_GET['url']);
+
+        if ($this->user_id)
+        {
+            if ($url)
+            {
+                header('Location: ' . $url);
+            }
+            else
+            {
+                HTTP::redirect('/');
+            }
+        }
+
+        $tcl = AWS_APP::config()->get('system')->tcllogin;
+
+        $saml = new saml_class();
+
+        $saml_msg = $saml->getSAML($tcl);
+
+        if($url)
+        {
+            $RelayState = $url;
+        }
+        else
+        {
+            $RelayState = '/';
+        }
+
+        TPL::assign('SAMLRequest', $saml_msg);
+        TPL::assign('ServiceLoginURL', $tcl['ServiceLoginURL']);
+        TPL::assign('RelayState', $RelayState);
+
+        TPL::output('account/newlogin');
+
+    }
+
+    public function saml_action(){
+
+        if(AWS_APP::config()->get('system')->tcllogin['Open'] == 0 OR $this->user_id){
+            HTTP::redirect('/');
+        }
+
+         $responseStr =  $_POST['SAMLResponse'];
+         $refer_url =  $_POST['RelayState'];
+
+        if($responseStr && $refer_url){
+            $saml = new saml_class();
+
+            $verify = $saml->validate($responseStr);
+
+            if($verify==1)
+            {
+                $xmldoc = new DOMDocument();
+                $xmldoc->loadXML($responseStr);
+                $nameID = $xmldoc->getElementsByTagName('NameID')->item(0)->nodeValue;
+
+                $_POST['user_name'] = htmlspecialchars($nameID);
+                $_POST['password'] = '123456';
+                $_POST['email'] = $_POST['user_name'].'@tcl.com';
+                $_POST['return_url'] = $refer_url;
+
+                $is_username = $this->model('account')->check_username($_POST['user_name']);
+
+                if($is_username)
+                {
+                    $result= $saml->do_login($_POST['user_name'],  $_POST['password'],$_POST['_is_mobile'], $_POST['return_url']);
+                }
+                else
+                {
+                    $result = $saml->do_register($_POST['user_name'],  $_POST['email'], $_POST['password'],$_POST['_is_mobile'], $_POST['return_url']);
+                }
+
+                if($result['status']==1)
+                {
+                    if(empty($result['url']))
+                    {
+                        $result['url'] = $refer_url;
+                    }
+
+                    header('Location: ' . $result['url']);
+                }
+
+            }
+            else
+            {
+                $result['msg'] = '签名校验失败';
+            }
+        }else{
+            $result['msg'] = '参数来源错误或没有参数！';
+        }
+
+        echo $result['msg'];
+
+    }
+
 
 	public function weixin_login_action()
 	{

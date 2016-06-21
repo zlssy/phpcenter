@@ -483,7 +483,7 @@ CREATE TABLE `aws_feature` (
   `title` varchar(200) DEFAULT NULL COMMENT '专题标题',
   `description` varchar(255) DEFAULT NULL COMMENT '专题描述',
   `icon` varchar(255) DEFAULT NULL COMMENT '专题图标',
-  `topic_count` int(11) NOT NULL DEFAULT '0' COMMENT '话题计数',
+  `topic_count` int(11) NOT NULL DEFAULT '0' COMMENT '标签计数',
   `css` text COMMENT '自定义CSS',
   `url_token` varchar(32) DEFAULT NULL,
   `seo_title` varchar(255) DEFAULT NULL,
@@ -505,7 +505,7 @@ DROP TABLE IF EXISTS `aws_feature_topic`;
 CREATE TABLE `aws_feature_topic` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `feature_id` int(11) NOT NULL DEFAULT '0' COMMENT '专题ID',
-  `topic_id` int(11) NOT NULL DEFAULT '0' COMMENT '话题ID',
+  `topic_id` int(11) NOT NULL DEFAULT '0' COMMENT '标签ID',
   PRIMARY KEY (`id`),
   KEY `feature_id` (`feature_id`),
   KEY `topic_id` (`topic_id`)
@@ -950,7 +950,7 @@ CREATE TABLE `aws_question_comments` (
 DROP TABLE IF EXISTS `aws_question_focus`;
 CREATE TABLE `aws_question_focus` (
   `focus_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `question_id` int(11) DEFAULT NULL COMMENT '话题ID',
+  `question_id` int(11) DEFAULT NULL COMMENT '标签ID',
   `uid` int(11) DEFAULT NULL COMMENT '用户UID',
   `add_time` int(10) DEFAULT NULL,
   PRIMARY KEY (`focus_id`),
@@ -1010,7 +1010,7 @@ CREATE TABLE `aws_question_thanks` (
 DROP TABLE IF EXISTS `aws_question_uninterested`;
 CREATE TABLE `aws_question_uninterested` (
   `interested_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `question_id` int(11) DEFAULT NULL COMMENT '话题ID',
+  `question_id` int(11) DEFAULT NULL COMMENT '标签ID',
   `uid` int(11) DEFAULT NULL COMMENT '用户UID',
   `add_time` int(10) DEFAULT NULL,
   PRIMARY KEY (`interested_id`),
@@ -1119,8 +1119,8 @@ CREATE TABLE `aws_related_links` (
 DROP TABLE IF EXISTS `aws_related_topic`;
 CREATE TABLE `aws_related_topic` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `topic_id` int(11) DEFAULT '0' COMMENT '话题 ID',
-  `related_id` int(11) DEFAULT '0' COMMENT '相关话题 ID',
+  `topic_id` int(11) DEFAULT '0' COMMENT '标签 ID',
+  `related_id` int(11) DEFAULT '0' COMMENT '相关标签 ID',
   PRIMARY KEY (`id`),
   KEY `topic_id` (`topic_id`),
   KEY `related_id` (`related_id`)
@@ -1180,8 +1180,8 @@ DROP TABLE IF EXISTS `aws_reputation_topic`;
 CREATE TABLE `aws_reputation_topic` (
   `auto_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) DEFAULT '0',
-  `topic_id` int(11) DEFAULT '0' COMMENT '话题ID',
-  `topic_count` int(10) DEFAULT '0' COMMENT '威望问题话题计数',
+  `topic_id` int(11) DEFAULT '0' COMMENT '标签ID',
+  `topic_count` int(10) DEFAULT '0' COMMENT '威望问题标签计数',
   `update_time` int(10) DEFAULT NULL COMMENT '更新时间',
   `agree_count` int(10) DEFAULT '0' COMMENT '赞成',
   `thanks_count` int(10) DEFAULT '0' COMMENT '感谢',
@@ -1401,13 +1401,13 @@ INSERT INTO `aws_system_setting` VALUES ('129', 'register_agreement', 's:1608:\"
 -- ----------------------------
 DROP TABLE IF EXISTS `aws_topic`;
 CREATE TABLE `aws_topic` (
-  `topic_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '话题id',
-  `topic_title` varchar(64) DEFAULT NULL COMMENT '话题标题',
+  `topic_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '标签id',
+  `topic_title` varchar(64) DEFAULT NULL COMMENT '标签标题',
   `add_time` int(10) DEFAULT NULL COMMENT '添加时间',
   `discuss_count` int(11) DEFAULT '0' COMMENT '讨论计数',
-  `topic_description` text COMMENT '话题描述',
-  `topic_pic` varchar(255) DEFAULT NULL COMMENT '话题图片',
-  `topic_lock` tinyint(2) NOT NULL DEFAULT '0' COMMENT '话题是否锁定 1 锁定 0 未锁定',
+  `topic_description` text COMMENT '标签描述',
+  `topic_pic` varchar(255) DEFAULT NULL COMMENT '标签图片',
+  `topic_lock` tinyint(2) NOT NULL DEFAULT '0' COMMENT '标签是否锁定 1 锁定 0 未锁定',
   `focus_count` int(11) DEFAULT '0' COMMENT '关注计数',
   `user_related` tinyint(1) DEFAULT '0' COMMENT '是否被用户关联',
   `url_token` varchar(32) DEFAULT NULL,
@@ -1432,12 +1432,12 @@ CREATE TABLE `aws_topic` (
   KEY `discuss_count_last_week` (`discuss_count_last_week`),
   KEY `discuss_count_last_month` (`discuss_count_last_month`),
   KEY `discuss_count_update` (`discuss_count_update`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='话题';
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='标签';
 
 -- ----------------------------
 -- Records of aws_topic
 -- ----------------------------
-INSERT INTO `aws_topic` VALUES ('1', '默认话题', null, '0', '默认话题', null, '0', '0', '0', null, '0', null, '0', '0', '0', '0', '0');
+INSERT INTO `aws_topic` VALUES ('1', '默认标签', null, '0', '默认标签', null, '0', '0', '0', null, '0', null, '0', '0', '0', '0', '0');
 INSERT INTO `aws_topic` VALUES ('2', '企业管理', '1461726614', '1', '', null, '0', '1', '0', null, '0', null, '0', '0', '1', '1', '1461726614');
 INSERT INTO `aws_topic` VALUES ('3', '企业文化', '1461726614', '1', '', null, '0', '1', '0', null, '0', null, '0', '0', '1', '1', '1461726614');
 
@@ -1447,14 +1447,14 @@ INSERT INTO `aws_topic` VALUES ('3', '企业文化', '1461726614', '1', '', null
 DROP TABLE IF EXISTS `aws_topic_focus`;
 CREATE TABLE `aws_topic_focus` (
   `focus_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `topic_id` int(11) DEFAULT NULL COMMENT '话题ID',
+  `topic_id` int(11) DEFAULT NULL COMMENT '标签ID',
   `uid` int(11) DEFAULT NULL COMMENT '用户UID',
   `add_time` int(10) DEFAULT NULL COMMENT '添加时间',
   PRIMARY KEY (`focus_id`),
   KEY `uid` (`uid`),
   KEY `topic_id` (`topic_id`),
   KEY `topic_uid` (`topic_id`,`uid`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='话题关注表';
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='标签关注表';
 
 -- ----------------------------
 -- Records of aws_topic_focus
@@ -1488,7 +1488,7 @@ CREATE TABLE `aws_topic_merge` (
 DROP TABLE IF EXISTS `aws_topic_relation`;
 CREATE TABLE `aws_topic_relation` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增 ID',
-  `topic_id` int(11) DEFAULT '0' COMMENT '话题id',
+  `topic_id` int(11) DEFAULT '0' COMMENT '标签id',
   `item_id` int(11) DEFAULT '0',
   `add_time` int(10) DEFAULT '0' COMMENT '添加时间',
   `uid` int(11) DEFAULT '0' COMMENT '用户ID',
@@ -1538,7 +1538,7 @@ CREATE TABLE `aws_users` (
   `article_count` int(10) NOT NULL DEFAULT '0' COMMENT '文章数量',
   `question_count` int(10) NOT NULL DEFAULT '0' COMMENT '问题数量',
   `answer_count` int(10) NOT NULL DEFAULT '0' COMMENT '回答数量',
-  `topic_focus_count` int(10) NOT NULL DEFAULT '0' COMMENT '关注话题数量',
+  `topic_focus_count` int(10) NOT NULL DEFAULT '0' COMMENT '关注标签数量',
   `invitation_available` int(10) NOT NULL DEFAULT '0' COMMENT '邀请数量',
   `group_id` int(10) DEFAULT '0' COMMENT '用户组',
   `reputation_group` int(10) DEFAULT '0' COMMENT '威望对应组',
@@ -1866,7 +1866,7 @@ DROP TABLE IF EXISTS `aws_user_action_history`;
 CREATE TABLE `aws_user_action_history` (
   `history_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `uid` int(11) NOT NULL COMMENT '用户id',
-  `associate_type` tinyint(1) DEFAULT NULL COMMENT '关联类型: 1 问题 2 回答 3 评论 4 话题',
+  `associate_type` tinyint(1) DEFAULT NULL COMMENT '关联类型: 1 问题 2 回答 3 评论 4 标签',
   `associate_action` smallint(3) DEFAULT NULL COMMENT '操作类型',
   `associate_id` int(11) DEFAULT NULL COMMENT '关联ID',
   `add_time` int(10) DEFAULT NULL COMMENT '添加时间',

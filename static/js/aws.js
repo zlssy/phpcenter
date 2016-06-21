@@ -132,10 +132,10 @@ var AWS =
 	ajax_post: function(formEl, processer, type) // 表单对象，用 jQuery 获取，回调函数名
 	{
 		// 若有编辑器的话就更新编辑器内容再提交
-		if (typeof CKEDITOR != 'undefined')
+		if (typeof UM != 'undefined')
 		{
-			for ( instance in CKEDITOR.instances ) {
-				CKEDITOR.instances[instance].updateElement();
+			for ( instance in UM.instances ) {
+				UM.instances[instance].sync();
 			}
 		}
 
@@ -163,41 +163,104 @@ var AWS =
 			}
 		}
 
-		var custom_data = {
-			_post_type: 'ajax'
-		};
+        if(formEl.attr('id') == 'fpw_form' || formEl.attr('id') == 'login_form' || formEl.attr('id') == 'setting_form')
+        {
+            if(formEl.find("input[name=old_password]").attr('type') == 'password')
+            {
+                if(!type)
+                {
+                    type = 'security';
+                }
+                var old_password = hex_md5(formEl.find("input[name=old_password]").val());
+            }
+            if(formEl.find("input[name=password]").attr('type') == 'password')
+            {
+                var password =  hex_md5(formEl.find("input[name=password]").val());
+            }
+            if(formEl.find("input[name=re_password]").attr('type') == 'password')
+            {
+                var re_password = hex_md5(formEl.find("input[name=re_password]").val());
+            }
+        }
 
-		formEl.ajaxSubmit(
-		{
-			dataType: 'json',
-			data: custom_data,
-			success: function (result)
-			{
-				processer(type, result);
-			},
-			error: function (error)
-			{
-				console.log(error);
-				if ($.trim(error.responseText) != '')
-				{
-					AWS.loading('hide');
+        if(old_password || password || re_password)
+        {
+            var custom_data;
 
-					alert(_t('发生错误, 返回的信息:') + ' ' + error.responseText);
-				}
-				else if (error.status == 0)
-				{
-					AWS.loading('hide');
+            if(formEl.attr('id') == 'login_form')
+            {
+                var return_url = formEl.find("input[name=return_url]").val();
+                var user_name = formEl.find("input[name=user_name]").val();
+                var net_auto_login = formEl.find("input[name=net_auto_login]").prop("checked")? 1 : 0;
+                custom_data = {
+                    return_url: return_url,
+                    user_name: user_name,
+                    password: password,
+                    net_auto_login: net_auto_login
+                }
+            }
+            else if(formEl.attr('id') == 'fpw_form')
+            {
+                var active_code = formEl.find("input[name=active_code]").val();
+                var seccode_verify = formEl.find("input[name=seccode_verify]").val();
+                custom_data = {
+                    active_code:active_code,
+                    password: password,
+                    re_password: re_password,
+                    seccode_verify: seccode_verify
+                }
+            }
+            else if(formEl.attr('id') == 'setting_form')
+            {
+                custom_data = {
+                    old_password: old_password,
+                    password: password,
+                    re_password: re_password
+                }
+            }
+            $.post(formEl.attr("action"),custom_data , function (result)
+            {
+                processer(type, result);
+            }, 'json');
 
-					alert(_t('网络链接异常'));
-				}
-				else if (error.status == 500)
-				{
-					AWS.loading('hide');
+            return false;
+        }
 
-					alert(_t('内部服务器错误'));
-				}
-			}
-		});
+        var custom_data = {
+            _post_type: 'ajax'
+        };
+        formEl.ajaxSubmit(
+            {
+                dataType: 'json',
+                data: custom_data,
+                success: function (result)
+                {
+                    processer(type, result);
+                },
+                error: function (error)
+                {
+                    if ($.trim(error.responseText) != '')
+                    {
+                        AWS.loading('hide');
+
+                        alert(_t('发生错误, 返回的信息:') + ' ' + error.responseText);
+                    }
+                    else if (error.status == 0)
+                    {
+                        AWS.loading('hide');
+
+                        alert(_t('网络链接异常'));
+                    }
+                    else if (error.status == 500)
+                    {
+                        AWS.loading('hide');
+
+                        alert(_t('内部服务器错误'));
+                    }
+                }
+            });
+
+
 	},
 
 	// ajax提交callback
@@ -217,6 +280,7 @@ var AWS =
 				case 'comments_form':
 				case 'reply':
 				case 'reply_question':
+				case 'security':
 					AWS.alert(result.err);
 
 					$('.aw-comment-box-btn .btn-success, .btn-reply').removeClass('disabled');
@@ -284,6 +348,11 @@ var AWS =
 					case 'error_message':
 						window.location.reload();
 					break;
+                    case 'security':
+                        AWS.alert(result.err);
+                        $('.aw-comment-box-btn .btn-success, .btn-reply').removeClass('disabled');
+                        setInterval("window.location.reload()",3000);
+                        break;
 
 					case 'ajax_post_modal':
 						$('#aw-ajax-box div.modal').modal('hide');
@@ -308,7 +377,7 @@ var AWS =
 							{
 								if (USER_ANSWERED)
 								{
-									$('.aw-replay-box').append('<p align="center">一个问题只能回复一次, 你可以在发言后 ' + ANSWER_EDIT_TIME + ' 分钟内编辑回复过的内容</p>');
+									$('.aw-replay-box').append('<p align="center">一个帖子只能回复一次, 你可以在发言后 ' + ANSWER_EDIT_TIME + ' 分钟内编辑回复过的内容</p>');
 								}
 							}
 						}
@@ -732,28 +801,20 @@ var AWS =
 				case 'commentEdit':
 					$.get(G_BASE_URL + '/question/ajax/fetch_answer_data/' + data.answer_id, function (result)
 					{
-						$('#editor_reply').html(result.answer_content.replace('&amp;', '&'));
-
-						var editor = CKEDITOR.replace( 'editor_reply' );
-
-						if (UPLOAD_ENABLE == 'Y')
-						{
-							var fileupload = new FileUpload('file', '.aw-edit-comment-box .aw-upload-box .btn', '.aw-edit-comment-box .aw-upload-box .upload-container', G_BASE_URL + '/publish/ajax/attach_upload/id-answer__attach_access_key-' + ATTACH_ACCESS_KEY, {'insertTextarea': '.aw-edit-comment-box #editor_reply', 'editor' : editor});
-
-							$.post(G_BASE_URL + '/publish/ajax/answer_attach_edit_list/', 'answer_id=' + data.answer_id, function (data) {
-								if (data['err']) {
-									return false;
-								} else {
-									$.each(data['rsm']['attachs'], function (i, v) {
-										fileupload.setFileList(v);
-									});
+						if(typeof UM.instances == 'undefined') {
+							UM.instances = [];
+						}
+						if(typeof AWS.commentEditEditor !== 'undefined') {
+							for(var i in UM.instances) {
+								if(UM.instances[i] == AWS.commentEditEditor) {
+									UM.instances.splice(i, 1);
 								}
-							}, 'json');
+							}
+							AWS.commentEditEditor.destroy();	//如果UMEditor实例已经存在,则需要注销该编辑器
 						}
-						else
-						{
-							$('.aw-edit-comment-box .aw-file-upload-box').hide();
-						}
+						AWS.commentEditEditor = UM.getEditor('editor_reply', {toolbar:UMEDITOR_TOOLBAR_OPTIONS['mini']});
+						UM.instances.push(AWS.commentEditEditor);
+						AWS.commentEditEditor.setContent(result.answer_content.replace('&amp;', '&'));
 					}, 'json');
 				break;
 
@@ -958,7 +1019,7 @@ var AWS =
 			var _this = $(this);
 			AWS.G.card_box_show_timer = setTimeout(function ()
 			{
-				//判断用户id or 话题id 是否存在
+				//判断用户id or 标签id 是否存在
 				if (_this.attr('data-id'))
 				{
 					 switch (type)
@@ -2083,10 +2144,12 @@ AWS.Dropdown =
 			$('#aw-topic-tags-select').html($(this).text());
 		});
 
-		if (selected)
-		{
-			$(selector + " .dropdown-menu li a[data-value='" + selected + "']").click();
-		}
+        if (selected)
+        {
+            var oldn = $(selector + " .dropdown-menu li a[data-value='" + selected + "']");
+            var newn = oldn.length ? oldn : $(selector + " .aw-dropdown li a[data-value='" + selected + "']");
+            newn.click();
+        }
 	},
 
 	/* 下拉菜单数据获取 */
@@ -2489,7 +2552,7 @@ AWS.Init =
 				return true;
 			}
 
-			var comment_box_id = '#aw-comment-box-' + $(this).attr('data-type') + '-' + 　$(this).attr('data-id');
+			var comment_box_id = '#aw-comment-box-' + $(this).attr('data-type') + '-' + $(this).attr('data-id');
 
 			if ($(comment_box_id).length)
 			{
@@ -2609,7 +2672,7 @@ AWS.Init =
 		});
 	},
 
-	// 初始化话题编辑box
+	// 初始化标签编辑box
 	init_topic_edit_box: function(selector) //selector -> .aw-edit-topic
 	{
 		$(selector).click(function ()
@@ -2731,7 +2794,7 @@ AWS.Init =
 
 			$(this).parents('.aw-topic-bar').find('.aw-edit-topic-box').fadeIn();
 
-			// 是否允许创建新话题
+			// 是否允许创建新标签
 			if (!G_CAN_CREATE_TOPIC)
 			{
 				$(this).parents('.aw-topic-bar').find('.add').hide();
@@ -2741,6 +2804,50 @@ AWS.Init =
 		});
 	}
 }
+
+;(function(g){
+    function create(){
+        var attrs, div, p;
+        div = document.createElement('div');
+        div.id = 'r_tips';
+        div.className = 'alert alert-danger';
+        div.innerHTML = '<i></i><span></span>';
+        attrs = {
+            position: 'fixed',
+            top: 0,
+            left: '50%',
+            'z-index': 10000,
+            width: '250px',
+            'font-size': '12px',
+            'margin-left': '-100px',
+            //'background-color': '#D15B47',
+            //'border': 'solid 1px black',
+            //'border-radius': '6px',
+            'text-align': 'center',
+            'color': 'black'
+        };
+        for (p in attrs) {
+            div.style[p] = attrs[p];
+        }
+        document.body.appendChild(div);
+        return create = function() {};
+    }
+
+    _tips_timer = null;
+
+    var show_tips = function(m, timer) {
+        if (timer == null) {
+            timer = 3000;
+        }
+        create();
+        clearTimeout(_tips_timer);
+        $('#r_tips').removeClass('out').addClass('in').find('span').html(m);
+        return _tips_timer = setTimeout(function() {
+            return $('#r_tips').removeClass('in').addClass('out');
+        }, timer);
+    };
+    g.show_tips = show_tips;
+}(AWS));
 
 function _t(string, replace)
 {
